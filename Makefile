@@ -1,3 +1,4 @@
+CC := gcc
 BIN := bin
 SRC := src
 OBJ := obj
@@ -7,10 +8,10 @@ OBJECTS := $(patsubst $(SRC)/%.h, $(OBJ)/%.o, $(HEADERS))
 build: program
 
 $(OBJ)/%.o: $(SRC)/%.c 
-	gcc -c $< -o $@
+	$(CC) -c $< -o $@
 
 program: $(OBJECTS)
-	gcc $(OBJECTS) -o $(BIN)/$@
+	$(CC) $(OBJECTS) -o $(BIN)/$@
 
 clean:
 	-rm $(OBJ)/*
