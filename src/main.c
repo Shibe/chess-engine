@@ -161,17 +161,21 @@ Bitboard compute_valid_row(Bitboard loc, char shift_amount, Bitboard own_side, B
     Bitboard pos_1 = loc;
     Bitboard pos_2 = loc;
 
-    // We do this because current piece can land ON the opponent, but not anywhere behind it.
+    // We do this because current piece can land ON the opponent, but not anywhere behind it. Wrapping problem does not exist here.
     Bitboard opp_left_shifted = opposing_side << shift_amount; 
     Bitboard opp_right_shifted = opposing_side >> shift_amount;
 
     for (int i = 1; i <= 8; i++) { // Max tiles in a row is 8
-        if (shift_amount != 8) { // We aren't moving up and down.
+        if (shift_amount == 7) {
             pos_1 = pos_1 & clear_file[FILE_A];
             pos_2 = pos_2 & clear_file[FILE_H];
+        } else if (shift_amount == 9 || shift_amount == 1) {
+            pos_1 = pos_1 & clear_file[FILE_H];
+            pos_2 = pos_2 & clear_file[FILE_A];
         }
-        pos_1 = pos_1 >> shift_amount & (~own_side) & (~opp_right_shifted); 
-        pos_2 = pos_2 << shift_amount & (~own_side) & (~opp_left_shifted);
+
+        pos_1 = pos_1 << shift_amount & (~own_side) & (~opp_left_shifted); 
+        pos_2 = pos_2 >> shift_amount & (~own_side) & (~opp_right_shifted);
         valid_moves = valid_moves | pos_1 | pos_2;
     }
     return valid_moves;
@@ -311,6 +315,37 @@ int main() {
     printf("All pieces : %lx \n", (chessboard->all_pieces));
     printf("Open moves for the queen : %lx \n", (open_moves));
     print_board(open_moves);
+
+    free(chessboard);
+    chessboard = initialise_board();
+    puts("\nChecking moves for both rooks on C5 and F6.");
+
+
+    chessboard->white_rooks = 0x000400000000;
+    update_board(chessboard);
+
+    open_moves = compute_rook(chessboard->white_rooks, chessboard->white_pieces, chessboard->black_pieces, clear_file);
+
+    printf("White king : %lx \n", (chessboard->white_king));
+    printf("White pieces : %lx \n", (chessboard->white_pieces));
+    printf("Black pieces : %lx \n", (chessboard->black_pieces));
+    printf("All pieces : %lx \n", (chessboard->all_pieces));
+    printf("Open moves for the rooks : %lx \n", (open_moves));
+
+    free(chessboard);
+    chessboard = initialise_board();
+    puts("\nChecking moves for both bishops on C5 and F6.");
+
+    chessboard->white_bishops = 0x8000000000;
+    update_board(chessboard);
+
+    open_moves = compute_bishop(chessboard->white_bishops, chessboard->white_pieces, chessboard->black_pieces, clear_file);
+
+    printf("White king : %lx \n", (chessboard->white_king));
+    printf("White pieces : %lx \n", (chessboard->white_pieces));
+    printf("Black pieces : %lx \n", (chessboard->black_pieces));
+    printf("All pieces : %lx \n", (chessboard->all_pieces));
+    printf("Open moves for the bishops : %lx \n", (open_moves));
 
     return 0;
 }
