@@ -155,9 +155,52 @@ Chessboard *initialise_board() {
     also located on the A or H file.
 
 */
-Bitboard compute_king(Bitboard king_loc, Bitboard own_side, Bitboard clear_file[8]) {
-    Bitboard king_removed_file_a = king_loc & clear_file[FILE_A];
-    Bitboard king_removed_file_h = king_loc & clear_file[FILE_H];
+
+Bitboard compute_valid_row(Bitboard loc, char shift_amount, Bitboard own_side, Bitboard opposing_side, Bitboard clear_file[FILE_LEN]) {
+    Bitboard valid_moves = 0x0;
+    Bitboard pos_1 = loc;
+    Bitboard pos_2 = loc;
+
+    // We do this because current piece can land ON the opponent, but not anywhere behind it.
+    Bitboard opp_left_shifted = opposing_side << shift_amount; 
+    Bitboard opp_right_shifted = opposing_side >> shift_amount;
+
+    for (int i = 1; i <= 8; i++) { // Max tiles in a row is 8
+        if (shift_amount != 8) { // We aren't moving up and down.
+            pos_1 = pos_1 & clear_file[FILE_A];
+            pos_2 = pos_2 & clear_file[FILE_H];
+        }
+        pos_1 = pos_1 >> shift_amount & (~own_side) & (~opp_right_shifted); 
+        pos_2 = pos_2 << shift_amount & (~own_side) & (~opp_left_shifted);
+        valid_moves = valid_moves | pos_1 | pos_2;
+    }
+    return valid_moves;
+}
+
+Bitboard compute_queen(Bitboard loc, Bitboard own_side, Bitboard opposing_side, Bitboard clear_file[FILE_LEN]) {
+    Bitboard valid_diagonal_moves_1 = compute_valid_row(loc, 7, own_side, opposing_side, clear_file);
+    Bitboard valid_diagonal_moves_2 = compute_valid_row(loc, 9, own_side, opposing_side, clear_file);
+    Bitboard valid_horizontal_moves = compute_valid_row(loc, 1, own_side, opposing_side, clear_file);
+    Bitboard valid_vertical_moves = compute_valid_row(loc, 8, own_side, opposing_side, clear_file);
+    return valid_diagonal_moves_1 | valid_diagonal_moves_2 | valid_vertical_moves | valid_horizontal_moves;
+}
+
+
+Bitboard compute_bishop(Bitboard loc, Bitboard own_side, Bitboard opposing_side, Bitboard clear_file[FILE_LEN]) {
+    Bitboard valid_diagonal_moves_1 = compute_valid_row(loc, 7, own_side, opposing_side, clear_file);
+    Bitboard valid_diagonal_moves_2 = compute_valid_row(loc, 9, own_side, opposing_side, clear_file);
+    return valid_diagonal_moves_1 | valid_diagonal_moves_2;
+}
+
+Bitboard compute_rook(Bitboard loc, Bitboard own_side, Bitboard opposing_side, Bitboard clear_file[FILE_LEN]) {
+    Bitboard valid_horizontal_moves = compute_valid_row(loc, 1, own_side, opposing_side, clear_file);
+    Bitboard valid_vertical_moves = compute_valid_row(loc, 8, own_side, opposing_side, clear_file);
+    return valid_vertical_moves | valid_horizontal_moves;
+}
+
+Bitboard compute_king(Bitboard king_loc, Bitboard own_side, Bitboard clear_file[FILE_LEN]) {
+    Bitboard king_removed_file_a = king_loc & clear_file[FILE_A]; // file A
+    Bitboard king_removed_file_h = king_loc & clear_file[FILE_H]; // file H
 
     Bitboard pos_1 = king_removed_file_a << 7;
     Bitboard pos_2 = king_loc << 8;
@@ -253,6 +296,20 @@ int main() {
     printf("Black pieces : %lx \n", (chessboard->black_pieces));
     printf("All pieces : %lx \n", (chessboard->all_pieces));
     printf("Open moves for the white king : %lx \n", (open_moves));
+    print_board(open_moves);
+
+    puts("\nChecking moves for queen on D5.");
+
+    chessboard->white_queens = D5;
+    update_board(chessboard);
+
+    open_moves = compute_queen(chessboard->white_queens, chessboard->white_pieces, chessboard->black_pieces, clear_file);
+
+    printf("White king : %lx \n", (chessboard->white_king));
+    printf("White pieces : %lx \n", (chessboard->white_pieces));
+    printf("Black pieces : %lx \n", (chessboard->black_pieces));
+    printf("All pieces : %lx \n", (chessboard->all_pieces));
+    printf("Open moves for the queen : %lx \n", (open_moves));
     print_board(open_moves);
 
     return 0;
