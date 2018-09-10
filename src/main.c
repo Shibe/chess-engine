@@ -1,11 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
-
-enum files { FILE_A, FILE_B, FILE_C, FILE_D, FILE_E, FILE_F, FILE_G, FILE_H, FILE_LEN };
-enum ranks { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RANK_LEN };
-
-typedef uint64_t Bitboard;
+#include "bitboard.h"
 
 typedef struct {
     Bitboard white_pawns;
@@ -160,14 +156,14 @@ Chessboard *initialise_board() {
 
 */
 Bitboard compute_king(Bitboard king_loc, Bitboard own_side, Bitboard clear_file[8]) {
-    Bitboard king_removed_file_a = king_loc & clear_file[FILE_A]; // file A
-    Bitboard king_removed_file_h = king_loc & clear_file[FILE_H]; // file H
+    Bitboard king_removed_file_a = king_loc & clear_file[FILE_A];
+    Bitboard king_removed_file_h = king_loc & clear_file[FILE_H];
 
-    Bitboard pos_1 = king_removed_file_h << 7;
+    Bitboard pos_1 = king_removed_file_a << 7;
     Bitboard pos_2 = king_loc << 8;
     Bitboard pos_3 = king_removed_file_h << 9;
     Bitboard pos_4 = king_removed_file_h << 1;
-    Bitboard pos_5 = king_removed_file_a >> 7;
+    Bitboard pos_5 = king_removed_file_h >> 7;
     Bitboard pos_6 = king_loc >> 8;
     Bitboard pos_7 = king_removed_file_a >> 9;
     Bitboard pos_8 = king_removed_file_a >> 1;
@@ -184,7 +180,6 @@ Bitboard compute_king(Bitboard king_loc, Bitboard own_side, Bitboard clear_file[
 
 int main() {
     Chessboard *chessboard = initialise_board();
-    
     /*
         Testing purposes only. I know this is a mess.
         Don't really need mask_rank and clear_rank right now, but these are useful later.
@@ -204,7 +199,7 @@ int main() {
     Bitboard clear_file[FILE_LEN] = { 0xFEFEFEFEFEFEFEFEULL, 0x0, 0x0, 0x0,
                                         0x0, 0x0, 0x0, 0x7F7F7F7F7F7F7F7FULL};
     
-
+    print_board(clear_file[FILE_A]);
     puts("Checking moves for white king from starting position");
 
     Bitboard open_moves = compute_king(chessboard->white_king, chessboard->white_pieces, clear_file);
@@ -214,7 +209,7 @@ int main() {
     printf("Black pieces : %lx \n", (chessboard->black_pieces));
     printf("All pieces : %lx \n", (chessboard->all_pieces));
     printf("Open moves for the white king : %lx \n", (open_moves));
-
+    print_board(open_moves);
     puts("\nChecking moves for white king on D5.");
 
     // Position of the king.
@@ -230,12 +225,11 @@ int main() {
     printf("Black pieces : %lx \n", (chessboard->black_pieces));
     printf("All pieces : %lx \n", (chessboard->all_pieces));
     printf("Open moves for the white king : %lx \n", (open_moves));
-
+    print_board(open_moves);
     puts("\nChecking moves for white king on A5.");
 
     // Position of the king.
     Bitboard A5 = 0x100000000ULL;
-
     chessboard->white_king = A5;
     update_board(chessboard);
 
@@ -246,6 +240,20 @@ int main() {
     printf("Black pieces : %lx \n", (chessboard->black_pieces));
     printf("All pieces : %lx \n", (chessboard->all_pieces));
     printf("Open moves for the white king : %lx \n", (open_moves));
+    print_board(open_moves);
+
+    Bitboard H5 = 0x8000000000ULL;
+    chessboard->white_king = H5;
+    update_board(chessboard);
+
+    open_moves = compute_king(chessboard->white_king, chessboard->white_pieces, clear_file);
+
+    printf("White king : %lx \n", (chessboard->white_king));
+    printf("White pieces : %lx \n", (chessboard->white_pieces));
+    printf("Black pieces : %lx \n", (chessboard->black_pieces));
+    printf("All pieces : %lx \n", (chessboard->all_pieces));
+    printf("Open moves for the white king : %lx \n", (open_moves));
+    print_board(open_moves);
 
     return 0;
 }
