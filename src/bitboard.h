@@ -7,6 +7,10 @@ enum ranks { RANK_1, RANK_2, RANK_3, RANK_4, RANK_5, RANK_6, RANK_7, RANK_8, RAN
 
 typedef uint64_t Bitboard;
 
+Bitboard mask_rank[RANK_LEN];
+Bitboard clear_rank[RANK_LEN];
+Bitboard clear_file[FILE_LEN];
+
 Bitboard get(Bitboard b, int square);
 
 void print_board(Bitboard b);
