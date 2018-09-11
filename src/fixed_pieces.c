@@ -126,6 +126,41 @@ Bitboard compute_king(Bitboard king_loc, Bitboard own_side, Bitboard clear_file[
     return valid_king_attacks;
 }
 
+/*
+	Basic idea for knights:
+
+    A | B | C | D | E | F | G | H
+    0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 
+    0 | 0 | 0 | 2 | 0 | 3 | 0 | 0
+    0 | 0 | 1 | 0 | 0 | 0 | 4 | 0
+    0 | 0 | 0 | 0 | K | 0 | 0 | 0
+    0 | 0 | 8 | 0 | 0 | 0 | 5 | 0 
+    0 | 0 | 0 | 7 | 0 | 6 | 0 | 0
+    0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+    0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+
+	Given knight at K, he can jump to the different positions. Similar to the king
+	we must solve the wrap around problem. The differnece is the wrap around problem can
+	occur in not only the A and H file, but also the B and G files. As such wrap around for
+	those position numbers must also clear the B and G files.
+*/
+
 Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_file[FILE_LEN]) {
-		return knight_loc;
+	Bitboard pos_1 = knight_loc << 6 & clear_file[FILE_H] & clear_file[FILE_G];
+	Bitboard pos_2 = knight_loc << 15 & clear_file[FILE_H];
+	Bitboard pos_3 = knight_loc << 17 & clear_file[FILE_A];
+	Bitboard pos_4 = knight_loc << 10 & clear_file[FILE_A] & clear_file[FILE_B];
+	Bitboard pos_5 = knight_loc >> 6 & clear_file[FILE_A] & clear_file[FILE_B];
+	Bitboard pos_6 = knight_loc >> 15 & clear_file[FILE_A];
+	Bitboard pos_7 = knight_loc >> 17 & clear_file[FILE_H];
+	Bitboard pos_8 = knight_loc >> 10 & clear_file[FILE_H] & clear_file[FILE_G];
+
+	Bitboard knight_attacks = pos_1 | pos_2 | pos_3 |
+							pos_4 | pos_5 | pos_6 |
+							pos_7 | pos_8;
+
+	Bitboard open_attacks_own_side = ~own_side;
+	Bitboard valid_knight_attacks = knight_attacks & open_attacks_own_side;
+
+	return valid_knight_attacks;
 }
