@@ -16,9 +16,10 @@ static char *test_king_attacks() {
 
     Bitboard outcome_attacks = compute_king(king_loc, white_pieces, clear_file);
     Bitboard expected_attacks = 0xC000C0000000ULL;
-    char *message = (char*)malloc(128 * sizeof(char));
+		char *message = malloc(128 * sizeof(char)); 
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
+		free(message);
     return 0;
 }
 
@@ -28,9 +29,10 @@ static char *test_knight_attacks() {
 
     Bitboard outcome_attacks = compute_knight(knight_loc, white_pieces, clear_file);
     Bitboard expected_attacks = 0x68640044280000ULL;
-    char *message = (char*)malloc(128 * sizeof(char));
+    char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
+		free(message);
     return 0;
 }
 
@@ -41,9 +43,10 @@ static char *test_queen_attacks() {
 
     Bitboard outcome_attacks = compute_queen(queen_loc, white_pieces, black_pieces, clear_file);
     Bitboard expected_attacks = 0x925438EF380000ULL;
-    char *message = (char*)malloc(128 * sizeof(char));
+    char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
+		free(message);
     return 0;
 }
 
@@ -54,9 +57,10 @@ static char *test_rook_attacks() {
 
     Bitboard outcome_attacks = compute_rook(rook_loc, white_pieces, black_pieces, clear_file);
     Bitboard expected_attacks = 0x101010EF100000ULL;
-    char *message = (char*)malloc(128 * sizeof(char));
+    char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
+		free(message);
     return 0;
 }
 
@@ -67,9 +71,10 @@ static char *test_bishop_attacks() {
 
     Bitboard outcome_attacks = compute_bishop(bishop_loc, white_pieces, black_pieces, clear_file);
     Bitboard expected_attacks = 0x82442800280000ULL;
-    char *message = (char*)malloc(128 * sizeof(char));
+    char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
+		free(message);
     return 0;
 }
 
