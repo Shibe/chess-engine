@@ -4,32 +4,40 @@
 #include "chessboard.h"
 
 Chessboard *initialise_chessboard() {
-    Chessboard *chessboard;
-    if ((chessboard = malloc(sizeof *chessboard)) != NULL) {
-        chessboard->white_pawns = 0xFF00ULL;
-        chessboard->white_rooks = 0x81ULL;
-        chessboard->white_knights = 0x42ULL;
-        chessboard->white_bishops = 0x24ULL;
-        chessboard->white_queens = 0x8ULL;
-        chessboard->white_king = 0x10ULL;
-        chessboard->black_pawns = 0xFF000000000000ULL;
-        chessboard->black_rooks = 0x8100000000000000ULL;
-        chessboard->black_knights = 0x4200000000000000ULL;
-        chessboard->black_bishops = 0x2400000000000000ULL;
-        chessboard->black_queens = 0x800000000000000ULL;
-        chessboard->black_king = 0x1000000000000000ULL;
-        update_chessboard(chessboard);
-    }
-    return chessboard;
+	Chessboard *chessboard = malloc(sizeof(Chessboard));
+	Pieces *white_pieces = malloc(sizeof(Pieces));
+	Pieces *black_pieces = malloc(sizeof(Pieces));
+
+
+	if(chessboard != NULL && white_pieces != NULL && black_pieces != NULL) {
+		white_pieces->pawns = 0xFF00ULL;
+        white_pieces->rooks = 0x81ULL;
+        white_pieces->knights = 0x42ULL;
+        white_pieces->bishops = 0x24ULL;
+        white_pieces->queens = 0x8ULL;
+        white_pieces->king = 0x10ULL;
+        black_pieces->pawns = 0xFF000000000000ULL;
+        black_pieces->rooks = 0x8100000000000000ULL;
+        black_pieces->knights = 0x4200000000000000ULL;
+        black_pieces->bishops = 0x2400000000000000ULL;
+        black_pieces->queens = 0x800000000000000ULL;
+        black_pieces->king = 0x1000000000000000ULL;
+
+		chessboard->black_pieces = black_pieces;
+		chessboard->white_pieces = white_pieces;
+
+		update_chessboard(chessboard);
+	}
+	return chessboard;
 }
 
 void update_chessboard(Chessboard *chessboard) {
-    chessboard->white_pieces = chessboard->white_pawns | chessboard->white_rooks | 
-                                chessboard->white_knights | chessboard->white_bishops |
-                                chessboard->white_queens | chessboard->white_king;
-    chessboard->black_pieces = chessboard->black_pawns | chessboard->black_rooks | 
-                                    chessboard->black_knights | chessboard->black_bishops |
-                                    chessboard->black_queens | chessboard->black_king;
-    chessboard->all_pieces = chessboard->white_pieces | chessboard->black_pieces;
+	update_pieces(chessboard->white_pieces);
+	update_pieces(chessboard->black_pieces);
+	chessboard->all_pieces = chessboard->black_pieces->all | chessboard->white_pieces->all;
 }
 
+void update_pieces(Pieces *pieces) {
+	pieces->all = pieces->pawns | pieces-> rooks | pieces->knights |
+		pieces->bishops | pieces->queens | pieces->king;
+}
