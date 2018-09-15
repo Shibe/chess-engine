@@ -1,12 +1,6 @@
 #include "bitboard.h"
 
 typedef struct {
-	Pieces *white_pieces;
-	Pieces *black_pieces;
-	Bitboard all_pieces;
-} Chessboard;
-
-typedef struct {
 	Bitboard pawns;
     Bitboard rooks;
     Bitboard knights;
@@ -15,6 +9,12 @@ typedef struct {
     Bitboard king;
 	Bitboard all;
 } Pieces;
+
+typedef struct {
+	Pieces *white_pieces;
+	Pieces *black_pieces;
+	Bitboard all_pieces;
+} Chessboard;
 
 Chessboard *initialise_chessboard();
 void update_chessboard(Chessboard *chessboard);

@@ -7,6 +7,7 @@
 #include "fixed_pieces.h"
 #include "sliding_pieces.h"
 #include "minunit.h"
+#include "game.h"
 
 int tests_run = 0;
 
@@ -96,5 +97,10 @@ int main() {
     }
     printf("Tests run: %d\n", tests_run);
 
-    return result != 0;
+	if (result) {
+		return result;
+	}
+
+	Chessboard *chessboard = initialise_chessboard();
+	game_loop(chessboard);
 }
