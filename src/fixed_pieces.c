@@ -164,3 +164,39 @@ Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_f
 
 	return valid_knight_attacks;
 }
+//even turn is white
+Bitboard compute_pawn(int turn, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_2], Bitboard clear_file[FILE_LEN]) {
+   
+   Bitboard open_attacks_own_side = ~own_side;
+   
+   if (turn == 0){
+      Bitboard pos_1 = pawn_loc << 8;
+   //if start position
+      Bitboard pos_2 = pawn_loc << 16;
+      Bitboard pos_3 = pawn_loc << 7 & opposing_side & clear_file[FILE_H];
+      Bitboard pos_4 = pawn_loc << 9 & opposing_side & clear_file[FILE_A];
+   }
+
+
+   //if black
+   Bitboard pos_1 = pawn_loc >> 8;
+   //if start position
+   Bitboard pos_2 = pawn_loc >> 16;
+   Bitboard pos_3 = pawn_loc >> 7 & opposing_side & clear_file[FILE_A];
+   Bitboard pos_4 = pawn_loc >> 9 & opposing_side & clear_file[FILE_H];
+
+   Bitboard pawn_moves = pos_1 | pos_2 | pos_3 | pos_4;
+   
+
+   Bitboard valid_pawn_moves = open_attacks_own_side & pawn_moves;
+
+
+   print_board(valid_pawn_moves);
+    
+   return valid_pawn_moves;
+
+
+// if pawn in start position, move 2 vertical
+
+
+}
