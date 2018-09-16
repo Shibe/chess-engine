@@ -8,7 +8,7 @@ OBJECTS := $(patsubst $(SRC)/%.h, $(OBJ)/%.o, $(HEADERS))
 build: program
 
 $(OBJ)/%.o: $(SRC)/%.c 
-	$(CC) -c $< -o $@
+	$(CC) -g -c $< -o $@
 
 program: $(OBJECTS)
 	$(CC) $(OBJECTS) -o $(BIN)/$@

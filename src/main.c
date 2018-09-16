@@ -7,7 +7,11 @@
 #include "fixed_pieces.h"
 #include "sliding_pieces.h"
 #include "minunit.h"
+<<<<<<< 2d628a553dc2954c17f0d1c8c0f4560c2595e0d5
 #include "game.h"
+=======
+#include "fen_parser.h"
+>>>>>>> Fen to bitboard logic
 
 int tests_run = 0;
 
@@ -127,10 +131,15 @@ int main() {
     }
     printf("Tests run: %d\n", tests_run);
 
-	if (result) {
-		return result;
-	}
+    if (result) {
+        return result;
+    }
 
-	Chessboard *chessboard = initialise_chessboard();
-	game_loop(chessboard);
+	
+    char *fen = "8/5N2/4p2p/5p1k/1p4rP/1P2Q1P1/P4P1K/5q2";
+    char *fen2 = "P7/7P/8/8/8/8/8/8";
+    parse(fen);
+    Chessboard *chessboard = initialise_chessboard();
+    game_loop(chessboard);  
+    return 0;
 }
