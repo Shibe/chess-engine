@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "bitboard.h"
 #include "chessboard.h"
@@ -40,4 +41,43 @@ void update_chessboard(Chessboard *chessboard) {
 void update_pieces(Pieces *pieces) {
 	pieces->all = pieces->pawns | pieces-> rooks | pieces->knights |
 		pieces->bishops | pieces->queens | pieces->king;
+}
+
+void print_chessboard(Chessboard *chessboard) {
+	for (int i = RANK_8; i >= RANK_1; i--) {
+        for (int j = FILE_A; j <= FILE_H; j++) {
+			char c;
+			c = get_symbol(chessboard->black_pieces, j+8*i);
+			if (c != '0') {
+				printf("\x1b[31m%c \x1b[0m", c);
+			} else {
+				c = get_symbol(chessboard->white_pieces, j+8*i);
+				if (c == '0') {
+					printf("%c ", c);
+				} else {
+					printf("\x1b[32m%c \x1b[0m", c);
+				}
+			}
+        }
+        printf ("\n");
+    }
+}
+
+char get_symbol(Pieces *pieces, int square) {
+	Bitboard mask = 1ULL << square;
+	if (pieces->pawns & mask) {
+		return 'P';
+	} else if (pieces->rooks & mask) {
+		return 'R';
+	} else if (pieces->knights & mask) {
+		return 'N';
+	} else if (pieces->bishops & mask) {
+		return 'B';
+	} else if (pieces->queens & mask) {
+		return 'Q';
+	} else if (pieces->king & mask) {
+		return 'K';
+	} else {
+		return '0';
+	}
 }

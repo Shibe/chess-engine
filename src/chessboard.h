@@ -19,3 +19,5 @@ typedef struct {
 Chessboard *initialise_chessboard();
 void update_chessboard(Chessboard *chessboard);
 void update_pieces(Pieces *pieces);
+void print_chessboard(Chessboard *chessboard);
+char get_symbol(Pieces *pieces, int square);

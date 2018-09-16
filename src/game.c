@@ -8,9 +8,9 @@
 
 void game_loop(Chessboard *chessboard) {
 	int active_player = 1;
-	print_board(chessboard->all_pieces);
 	while (1) {
 		int success = 0;
+		print_chessboard(chessboard);
 		if (active_player) {
 			printf("%s", "White player enter your move.\n");
 			success = turn(chessboard->white_pieces, chessboard->black_pieces);
