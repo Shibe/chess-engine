@@ -21,7 +21,6 @@ void game_loop(Chessboard *chessboard) {
 		if (success) {
 			update_chessboard(chessboard);
 			active_player = !active_player;
-			print_board(chessboard->all_pieces);
 		}
 	}
 }

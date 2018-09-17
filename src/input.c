@@ -3,7 +3,7 @@
 
 int read_move(int *start_file, int *start_rank, int *end_file, int *end_rank) {
 	char raw_move[5];
-	scanf("%s", raw_move);
+	fgets(raw_move, 5, stdin);
 	return parse_file(raw_move[0], start_file) &&
 		parse_rank(raw_move[1], start_rank) &&
 		parse_file(raw_move[2], end_file) &&
