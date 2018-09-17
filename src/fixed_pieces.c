@@ -1,4 +1,5 @@
 #include "bitboard.h"
+#include "stdio.h"
 
 /*
     Basic idea: 
@@ -163,4 +164,61 @@ Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_f
 	Bitboard valid_knight_attacks = knight_attacks & open_attacks_own_side;
 
 	return valid_knight_attacks;
+}
+
+/*
+       A | B | C | D | E | F | G | H
+    8  0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 
+    7  0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+    6  0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+    5  0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+    4  0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 
+    3  0 | 3 | 1 | 4 | 0 | 0 | 0 | 0
+    2  0 | 0 | P | 0 | 0 | 0 | 0 | 0
+    1  0 | 0 | 0 | 0 | 0 | 0 | 0 | 0
+
+    The pawn is able to make four different moves, two out of which consists of attacking an enemy piece. 
+    
+    Pawns can only move vertically when moving and diagonally when attacking. 
+    
+    Given white pawn P, the pawn can move to 1 if there are neither enemy or friendly pieces on tile 1. Whenever the pawn is in
+    the starting position (RANK_2 for white and RANK_7 for black), a pawn can move 2 steps in the vertical foward direction, 
+    whenever there is no friendly or enemy piece in either of the two tiles in front of the pawn. This is checked by the 
+    bitwise & between the pawn location and a mask for the starting rank for the pawn. 
+    
+    Mask of RANK_2 looks like 0xFF00 and the pawn position 0x400.
+    
+    Pawn P can move to 3 or 4 whenever an enemy piece is present at the corresponding tile.
+    To avoid the wrap around problem for diagonal movements, clearing File H and File A are done accordingly.
+*/
+
+Bitboard compute_pawn(int is_black_turn, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
+    Bitboard pos_1 = 0x0, pos_2 = 0x0, pos_3 = 0x0, pos_4 = 0x0, pawn_on_start_position = 0x0;
+    
+    if (is_black_turn) {
+        pos_1 = pawn_loc >> 8 & ~opposing_side;
+
+        pawn_on_start_position = pawn_loc & mask_rank[RANK_7];
+        if (pawn_on_start_position && pos_1) {
+            pos_2 = pawn_loc >> 16 & ~opposing_side;
+        }
+        pos_3 = pawn_loc >> 7 & opposing_side & clear_file[FILE_A];
+        pos_4 = pawn_loc >> 9 & opposing_side & clear_file[FILE_H];
+
+    } else { // white turn
+        pos_1 = pawn_loc << 8 & ~opposing_side;
+        pawn_on_start_position = pawn_loc & mask_rank[RANK_2];
+
+        if (pawn_on_start_position && pos_1) {
+            pos_2 = pawn_loc << 16 & ~opposing_side;
+        }
+
+        pos_3 = pawn_loc << 7 & opposing_side & clear_file[FILE_H];
+        pos_4 = pawn_loc << 9 & opposing_side & clear_file[FILE_A];
+    }
+
+    Bitboard pawn_moves = pos_1 | pos_2 | pos_3 | pos_4; 
+    Bitboard valid_pawn_moves = pawn_moves & ~own_side;
+
+    return valid_pawn_moves;
 }
