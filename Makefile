@@ -5,7 +5,7 @@ OBJ := obj
 HEADERS := $(wildcard $(SRC)/*.h)
 OBJECTS := $(patsubst $(SRC)/%.h, $(OBJ)/%.o, $(HEADERS))
 
-build: program
+build: clean program
 
 $(OBJ)/%.o: $(SRC)/%.c 
 	$(CC) -g -c $< -o $@
