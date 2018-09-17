@@ -32,6 +32,22 @@ Chessboard *initialise_chessboard() {
 	return chessboard;
 }
 
+void clear_chessboard(Chessboard *chessboard) {
+    chessboard->white_pawns = 0x0ULL;
+    chessboard->white_rooks = 0x0ULL;
+    chessboard->white_knights = 0x0ULL;
+    chessboard->white_bishops = 0x0ULL;
+    chessboard->white_queens = 0x0ULL;
+    chessboard->white_king = 0x0ULL;
+    chessboard->black_pawns = 0x0ULL;
+    chessboard->black_rooks = 0x0ULL;
+    chessboard->black_knights = 0x0ULL;
+    chessboard->black_bishops = 0x0ULL;
+    chessboard->black_queens = 0x0ULL;
+    chessboard->black_king = 0x0ULL;
+    update_chessboard(chessboard);
+}
+
 void update_chessboard(Chessboard *chessboard) {
 	update_pieces(chessboard->white_pieces);
 	update_pieces(chessboard->black_pieces);

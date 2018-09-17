@@ -17,6 +17,7 @@ typedef struct {
 } Chessboard;
 
 Chessboard *initialise_chessboard();
+void clear_chessboard(Chessboard *chessboard);
 void update_chessboard(Chessboard *chessboard);
 void update_pieces(Pieces *pieces);
 void print_chessboard(Chessboard *chessboard);
