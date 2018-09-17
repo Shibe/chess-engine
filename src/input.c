@@ -43,7 +43,7 @@ int parse_file(char c, int *file) {
 }
 
 int parse_rank(char c, int *rank) {
-	int parsed = atoi(c);
+	int parsed = atoi(&c);
 	if (parsed >= 1 && parsed <= 8) {
 		*rank = parsed - 1;
 		return 1;

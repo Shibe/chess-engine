@@ -84,7 +84,7 @@ static char *test_black_pawn_attacks_from_start() {
     Bitboard white_pieces = 0x1014140FF000000ULL;
     Bitboard black_pieces = 0xFEFE000000000000ULL;
 
-    Bitboard outcome_attacks = compute_pawn(1, pawn_loc, black_pieces, white_pieces, mask_rank, clear_file);
+    Bitboard outcome_attacks = compute_pawn(0, pawn_loc, black_pieces, white_pieces, mask_rank, clear_file);
     Bitboard expected_attacks = 0xC08000000000ULL;
     char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
@@ -98,7 +98,7 @@ static char *test_white_pawn_attacks(){
     Bitboard white_pieces = 0x200000ULL;
     Bitboard black_pieces = 0x2010000000ULL;
     
-    Bitboard outcome_attacks = compute_pawn(0, pawn_loc, white_pieces, black_pieces, mask_rank, clear_file);
+    Bitboard outcome_attacks = compute_pawn(1, pawn_loc, white_pieces, black_pieces, mask_rank, clear_file);
     Bitboard expected_attacks = 0x30000000ULL;
     char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);

@@ -6,12 +6,13 @@
 #include "game.h"
 #include <stdio.h>
 
+int ACTIVE_PLAYER = 1;
+
 void game_loop(Chessboard *chessboard) {
-	int active_player = 1;
 	while (1) {
 		int success = 0;
 		print_chessboard(chessboard);
-		if (active_player) {
+		if (ACTIVE_PLAYER) {
 			printf("%s", "White player enter your move.\n");
 			success = turn(chessboard->white_pieces, chessboard->black_pieces);
 		} else {
@@ -20,7 +21,7 @@ void game_loop(Chessboard *chessboard) {
 		}
 		if (success) {
 			update_chessboard(chessboard);
-			active_player = !active_player;
+			ACTIVE_PLAYER = !ACTIVE_PLAYER;
 		}
 	}
 }
@@ -42,17 +43,17 @@ int turn(Pieces *own_side, Pieces *opposing_side) {
 	}
 	
 	if (start & own_side->pawns) {
-		is_valid_move = 0x0ULL; //TODO: Implement for pawns.
+		is_valid_move = end & compute_pawn(ACTIVE_PLAYER, own_side->pawns & start, own_side->all, opposing_side->all, mask_rank, clear_file);
 	} else if (start & own_side->rooks) {
-		is_valid_move = end & compute_rook(own_side->rooks, own_side->all, opposing_side->all, clear_file);
+		is_valid_move = end & compute_rook(own_side->rooks & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->knights) {
-		is_valid_move = end & compute_knight(own_side->knights, own_side->all, clear_file);
+		is_valid_move = end & compute_knight(own_side->knights & start, own_side->all, clear_file);
 	} else if (start & own_side->bishops) {
-		is_valid_move = end & compute_bishop(own_side->bishops, own_side->all, opposing_side->all, clear_file);
+		is_valid_move = end & compute_bishop(own_side->bishops & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->queens) {
-		is_valid_move = end & compute_queen(own_side->queens, own_side->all, opposing_side->all, clear_file);
+		is_valid_move = end & compute_queen(own_side->queens & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->king) {
-		is_valid_move = end & compute_king(own_side->king, own_side->all, clear_file);
+		is_valid_move = end & compute_king(own_side->king & start, own_side->all, clear_file);
 	}
 
 	if (!is_valid_move) {

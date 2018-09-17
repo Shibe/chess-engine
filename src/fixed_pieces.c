@@ -192,32 +192,32 @@ Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_f
     To avoid the wrap around problem for diagonal movements, clearing File H and File A are done accordingly.
 */
 
-Bitboard compute_pawn(int is_black_turn, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
-    Bitboard pos_1 = 0x0, pos_2 = 0x0, pos_3 = 0x0, pos_4 = 0x0, pawn_on_start_position = 0x0;
+Bitboard compute_pawn(int is_white_turn, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
+    Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL, pos_3 = 0x0ULL, pos_4 = 0x0ULL, pawn_on_start_position = 0x0ULL;
     
-    if (is_black_turn) {
-        pos_1 = pawn_loc >> 8 & ~opposing_side;
+    if (!is_white_turn) {
+        pos_1 = pawn_loc >> 8;
 
         pawn_on_start_position = pawn_loc & mask_rank[RANK_7];
         if (pawn_on_start_position && pos_1) {
-            pos_2 = pawn_loc >> 16 & ~opposing_side;
+            pos_2 = pawn_loc >> 16;
         }
-        pos_3 = pawn_loc >> 7 & opposing_side & clear_file[FILE_A];
-        pos_4 = pawn_loc >> 9 & opposing_side & clear_file[FILE_H];
+        pos_3 = pawn_loc >> 7 & clear_file[FILE_A];
+        pos_4 = pawn_loc >> 9 & clear_file[FILE_H];
 
     } else { // white turn
-        pos_1 = pawn_loc << 8 & ~opposing_side;
+        pos_1 = pawn_loc << 8;
         pawn_on_start_position = pawn_loc & mask_rank[RANK_2];
 
         if (pawn_on_start_position && pos_1) {
-            pos_2 = pawn_loc << 16 & ~opposing_side;
+            pos_2 = pawn_loc << 16;
         }
 
-        pos_3 = pawn_loc << 7 & opposing_side & clear_file[FILE_H];
-        pos_4 = pawn_loc << 9 & opposing_side & clear_file[FILE_A];
+        pos_3 = pawn_loc << 7 & clear_file[FILE_H];
+        pos_4 = pawn_loc << 9 & clear_file[FILE_A];
     }
 
-    Bitboard pawn_moves = pos_1 | pos_2 | pos_3 | pos_4; 
+    Bitboard pawn_moves = (pos_1 & ~opposing_side) | (pos_2 & ~opposing_side) | (pos_3 & opposing_side) | (pos_4 & opposing_side);
     Bitboard valid_pawn_moves = pawn_moves & ~own_side;
 
     return valid_pawn_moves;
