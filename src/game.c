@@ -6,28 +6,28 @@
 #include "game.h"
 #include <stdio.h>
 
-int ACTIVE_PLAYER = 1;
 
 void game_loop(Chessboard *chessboard) {
 	while (1) {
 		int success = 0;
+		int active_player = chessboard->active_color;
 		print_chessboard(chessboard);
-		if (ACTIVE_PLAYER) {
+		if (chessboard->active_color == WHITE) {
 			printf("%s", "White player enter your move.\n");
-			success = turn(chessboard->white_pieces, chessboard->black_pieces);
+			success = turn(active_player, chessboard->white_pieces, chessboard->black_pieces);
 		} else {
 			printf("%s", "Black player enter your move.\n");
-			success = turn(chessboard->black_pieces, chessboard->white_pieces);
+			success = turn(active_player, chessboard->black_pieces, chessboard->white_pieces);
 		}
 		if (success) {
 			update_chessboard(chessboard);
-			ACTIVE_PLAYER = !ACTIVE_PLAYER;
+			chessboard->active_color = !active_player;
 		}
 	}
 }
 
-int turn(Pieces *own_side, Pieces *opposing_side) {
-	Bitboard attacked_squares = compute_attacked_squares(own_side, opposing_side);
+int turn(int active_player, Pieces *own_side, Pieces *opposing_side) {
+	Bitboard attacked_squares = compute_attacked_squares(!active_player, own_side, opposing_side);
 	int start_file, start_rank, end_file, end_rank;
 	int correct_move = read_move(&start_file, &start_rank, &end_file, &end_rank);
 	if (!correct_move) {
@@ -43,7 +43,7 @@ int turn(Pieces *own_side, Pieces *opposing_side) {
 	}
 	
 	if (start & own_side->pawns) {
-		is_valid_move = end & compute_pawn(ACTIVE_PLAYER, own_side->pawns & start, own_side->all, opposing_side->all, mask_rank, clear_file);
+		is_valid_move = end & compute_pawn(active_player, own_side->pawns & start, own_side->all, opposing_side->all, mask_rank, clear_file);
 	} else if (start & own_side->rooks) {
 		is_valid_move = end & compute_rook(own_side->rooks & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->knights) {
@@ -91,8 +91,8 @@ Bitboard input_to_square(int rank, int file) {
 	return location;
 }
 
-Bitboard compute_attacked_squares(Pieces *own_side, Pieces *opposing_side) {
-	Bitboard pawns = 0x0; //TODO: Add pawn
+Bitboard compute_attacked_squares(int opposing_player, Pieces *own_side, Pieces *opposing_side) {
+	Bitboard pawns = compute_pawn(opposing_player, opposing_side->pawns, opposing_side->all, own_side->all, mask_rank, clear_file); //TODO: Not every valid move is an attacked square, should be split up.
 	Bitboard rooks = compute_rook(opposing_side->rooks, opposing_side->all, own_side->all, clear_file);
 	Bitboard knights = compute_knight(opposing_side->knights, opposing_side->all, clear_file);
 	Bitboard bishops = compute_bishop(opposing_side->bishops, opposing_side->all, own_side->all, clear_file);
