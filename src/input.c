@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 int read_move(int *start_file, int *start_rank, int *end_file, int *end_rank) {
-	char raw_move[4];
+	char raw_move[5];
 	scanf("%s", raw_move);
 	return parse_file(raw_move[0], start_file) &&
 		parse_rank(raw_move[1], start_rank) &&
