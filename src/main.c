@@ -119,7 +119,7 @@ static char *all_tests() {
     return 0;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     char *result = all_tests();
     if (result != 0) {
         printf("%s\n", result);
@@ -131,11 +131,17 @@ int main() {
     if (result) {
         return 1;
     }
-	
-    char *fen = "8/5N2/4p2p/5p1k/1p4rP/1P2Q1P1/P4P1K/5q2";
-    char *fen2 = "P7/7P/8/8/8/8/8/8";
-    parse(fen);
-    Chessboard *chessboard = initialise_chessboard();
+
+    Chessboard *chessboard = create_chessboard();
+    if (chessboard == NULL) {
+        return 1;
+    }
+    if (argc > 1) {
+        char *fen = argv[1];
+        parse(chessboard, fen);
+    } else {
+        initialise_chessboard(chessboard);
+    }
     game_loop(chessboard);  
     return 0;
 }
