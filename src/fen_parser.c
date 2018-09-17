@@ -3,104 +3,95 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <ctype.h>
 #include "bitboard.h"
 #include "chessboard.h"
 #include "fen_parser.h"
 
-regex_t file_regex;
-int result;
+regex_t FILE_REGEX;
 
-void parse(char *fen) {
-    // ignore case because prnbqk and PRNBQK both need to match
-    result = regcomp(&file_regex, "([prnbqk]|[[:digit:]])", REG_ICASE | REG_EXTENDED);
-    if (result) {
-        puts("Couldn't compile regex\n");
-        return exit(1);
-    }
-    Bitboard board = 0x0ULL;
-    int rank_count = RANK_LEN;
-    char *rank, *str;
-    str = strdup(fen);
-    //TODO: refactor
+int parse(char *fen) {
     Chessboard *chessboard = initialise_chessboard();
     clear_chessboard(chessboard);
-    while((rank = strsep(&str, "/"))) {
-        rank_count--;
-        board |= parse_rank(rank, rank_count, chessboard);
+
+    // ignore case because prnbqk and PRNBQK both need to match
+    int reg_error = regcomp(&FILE_REGEX, "([prnbqk]|[[:digit:]])", REG_ICASE | REG_EXTENDED);
+    if (reg_error) {
+        puts("Couldn't compile regex\n");
+        return 1;
     }
+
+    char *rank, *str;
+    str = strdup(fen);
+    for(int curr_rank = RANK_8; curr_rank >= RANK_1; curr_rank--) {
+        rank = strsep(&str, "/");
+        parse_rank_token(rank, curr_rank, chessboard);
+    }
+
     update_chessboard(chessboard);
     print_board(chessboard->all_pieces);
     free(str);
+    return 0;
 }
 
-Bitboard parse_rank(char rank[], int rank_count, Chessboard *board) {
+int parse_rank_token(char rank[], int current_rank, Chessboard *board) {
     int file = 0;
-    int shift_amount;
-    Bitboard file_board = 0x0ULL;
-    for (int i = 0; rank[i] != 0; i++) {
-        char token = rank[i];
-        result = regexec(&file_regex, &token, 0, NULL, 0);
-        if (!result) { // match found
-            shift_amount = get_shift_amount(token);
-            file = file + shift_amount;
-            if (!shift_amount) {
-                Bitboard location = 0x00000000000001ULL;
-                location = location << (rank_count * 8 + file);
-                token_to_chessboard(token, location, board);
-                file++;
+    for (int i = 0; rank[i] != '\0'; i++) {
+        char c = rank[i];
+        int reg_error = regexec(&FILE_REGEX, &c, 0, NULL, 0);
+        if (reg_error) {
+            if (reg_error == REG_NOMATCH) {
+                printf("'%s' doesn't match \n", &c);
             }
+            return 1;
         }
-        else if (result == REG_NOMATCH) {
-            printf("'%s' doesn't match \n", &token);
+        if (isdigit(c)) {
+            file = file + atoi(&c);
+        } else {
+            Bitboard location = 1ULL << (current_rank * 8 + file);
+            token_to_chessboard(c, location, board);
+            file++;
         }
     }
-    return file_board;
-}
-
-int get_shift_amount(char token) {
-    if (token >= '0' && token <= '9') {
-        return atoi(&token);
-    } else {
-        return 0;
-    }
+    return 0;
 }
 
 void token_to_chessboard(char token, Bitboard location, Chessboard *chessboard) {
     switch(token) {
-        case 'p':
+        case 'P':
             chessboard->white_pawns |= location;
             return;
-        case 'r':
+        case 'R':
             chessboard->white_rooks |= location;
             return;
-        case 'n':
+        case 'N':
             chessboard->white_knights |= location;
             return;
-        case 'b':
+        case 'B':
             chessboard->white_bishops |= location;
             return;
-        case 'q':
+        case 'Q':
             chessboard->white_queens |= location;
             return;
-        case 'k':
+        case 'K':
             chessboard->white_king |= location;
             return;
-        case 'P':
+        case 'p':
             chessboard->black_pawns |= location;
             return;
-        case 'R':
+        case 'r':
             chessboard->black_rooks |= location;
             return;
-        case 'N':
+        case 'n':
             chessboard->black_knights |= location;
             return;
-        case 'B':
+        case 'b':
             chessboard->black_bishops |= location;
             return;
-        case 'Q':
+        case 'q':
             chessboard->black_queens |= location;
             return;
-        case 'K':
+        case 'k':
             chessboard->black_king |= location;
             return;
     }
