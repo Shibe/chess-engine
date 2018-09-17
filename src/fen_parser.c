@@ -34,47 +34,47 @@ int parse(char *fen) {
         }
     }
     update_chessboard(chessboard);
-    print_board(chessboard->all_pieces);
+    print_chessboard(chessboard);
     return 0;
 }
 
 int token_to_chessboard(char token, Bitboard location, Chessboard *chessboard) {
     switch(token) {
         case 'P':
-            chessboard->white_pawns |= location;
+            chessboard->white_pieces->pawns |= location;
             return 0;
         case 'R':
-            chessboard->white_rooks |= location;
+            chessboard->white_pieces->rooks |= location;
             return 0;
         case 'N':
-            chessboard->white_knights |= location;
+            chessboard->white_pieces->knights |= location;
             return 0;
         case 'B':
-            chessboard->white_bishops |= location;
+            chessboard->white_pieces->bishops |= location;
             return 0;
         case 'Q':
-            chessboard->white_queens |= location;
+            chessboard->white_pieces->queens |= location;
             return 0;
         case 'K':
-            chessboard->white_king |= location;
+            chessboard->white_pieces->king |= location;
             return 0;
         case 'p':
-            chessboard->black_pawns |= location;
+            chessboard->black_pieces->pawns |= location;
             return 0;
         case 'r':
-            chessboard->black_rooks |= location;
+            chessboard->black_pieces->rooks |= location;
             return 0;
         case 'n':
-            chessboard->black_knights |= location;
+            chessboard->black_pieces->knights |= location;
             return 0;
         case 'b':
-            chessboard->black_bishops |= location;
+            chessboard->black_pieces->bishops |= location;
             return 0;
         case 'q':
-            chessboard->black_queens |= location;
+            chessboard->black_pieces->queens |= location;
             return 0;
         case 'k':
-            chessboard->black_king |= location;
+            chessboard->black_pieces->king |= location;
             return 0;
         default:
             return 1;
