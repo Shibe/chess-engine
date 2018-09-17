@@ -1,5 +1,6 @@
 #include "input.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 int read_move(int *start_file, int *start_rank, int *end_file, int *end_rank) {
 	char raw_move[5];
@@ -42,7 +43,7 @@ int parse_file(char c, int *file) {
 }
 
 int parse_rank(char c, int *rank) {
-	int parsed = c - '0';
+	int parsed = atoi(c);
 	if (parsed >= 1 && parsed <= 8) {
 		*rank = parsed - 1;
 		return 1;

@@ -29,10 +29,6 @@ int turn(Pieces *own_side, Pieces *opposing_side) {
 	Bitboard attacked_squares = compute_attacked_squares(own_side, opposing_side);
 	int start_file, start_rank, end_file, end_rank;
 	int correct_move = read_move(&start_file, &start_rank, &end_file, &end_rank);
-	printf("start file: %i\n", start_file);
-	printf("start rank: %i\n", start_rank);
-	printf("end file: %i\n", end_file);
-	printf("end rank: %i\n", end_rank);
 	if (!correct_move) {
 		return 0;
 	}
