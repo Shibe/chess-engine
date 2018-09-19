@@ -192,7 +192,7 @@ Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_f
     To avoid the wrap around problem for diagonal movements, clearing File H and File A are done accordingly.
 */
 
-Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
+Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard en_passant_target, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
     Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL, pos_3 = 0x0ULL, pos_4 = 0x0ULL, pawn_on_start_position = 0x0ULL;
     
     if (active_player == BLACK) { 
@@ -217,8 +217,9 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
         pos_4 = pawn_loc << 9 & clear_file[FILE_A];
     }
 
-    Bitboard pawn_moves = (pos_1 & ~opposing_side) | (pos_2 & ~opposing_side) | (pos_3 & opposing_side) | (pos_4 & opposing_side);
-    Bitboard valid_pawn_moves = pawn_moves & ~own_side;
+    Bitboard move = (pos_1 | pos_2) & ~opposing_side & ~own_side;
+    Bitboard attack =  ((pos_3 | pos_4) & opposing_side) | (pos_3 | pos_4) & en_passant_target;
+    Bitboard valid_pawn_moves = move | attack;
 
     return valid_pawn_moves;
 }
