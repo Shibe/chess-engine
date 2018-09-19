@@ -4,9 +4,9 @@
 
 int is_checked(Bitboard king, Bitboard attacked_squares);
 int move_piece(Pieces *pieces, Bitboard start, Bitboard end);
-int turn(Pieces *own_side, Pieces *opposing_side);
+int turn(int active_player, Pieces *own_side, Pieces *opposing_side);
 void game_loop(Chessboard *chessboard);
 Bitboard input_to_square(int rank, int file);
-Bitboard compute_attacked_squares(Pieces *own_side, Pieces *opposing_side);
+Bitboard compute_attacked_squares(int opposing_player, Pieces *own_side, Pieces *opposing_side);
 
 #endif

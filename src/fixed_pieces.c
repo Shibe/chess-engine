@@ -1,6 +1,6 @@
 #include "bitboard.h"
 #include "stdio.h"
-
+#include "chessboard.h"
 /*
     Basic idea: 
 
@@ -192,10 +192,10 @@ Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_f
     To avoid the wrap around problem for diagonal movements, clearing File H and File A are done accordingly.
 */
 
-Bitboard compute_pawn(int is_white_turn, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
+Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
     Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL, pos_3 = 0x0ULL, pos_4 = 0x0ULL, pawn_on_start_position = 0x0ULL;
     
-    if (!is_white_turn) {
+    if (active_player == BLACK) { 
         pos_1 = pawn_loc >> 8;
 
         pawn_on_start_position = pawn_loc & mask_rank[RANK_7];
@@ -205,7 +205,7 @@ Bitboard compute_pawn(int is_white_turn, Bitboard pawn_loc, Bitboard own_side, B
         pos_3 = pawn_loc >> 7 & clear_file[FILE_A];
         pos_4 = pawn_loc >> 9 & clear_file[FILE_H];
 
-    } else { // white turn
+    } else {
         pos_1 = pawn_loc << 8;
         pawn_on_start_position = pawn_loc & mask_rank[RANK_2];
 

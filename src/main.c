@@ -8,6 +8,7 @@
 #include "sliding_pieces.h"
 #include "minunit.h"
 #include "game.h"
+#include "fen_parser.h"
 
 int tests_run = 0;
 
@@ -84,7 +85,7 @@ static char *test_black_pawn_attacks_from_start() {
     Bitboard white_pieces = 0x1014140FF000000ULL;
     Bitboard black_pieces = 0xFEFE000000000000ULL;
 
-    Bitboard outcome_attacks = compute_pawn(0, pawn_loc, black_pieces, white_pieces, mask_rank, clear_file);
+    Bitboard outcome_attacks = compute_pawn(BLACK, pawn_loc, black_pieces, white_pieces, mask_rank, clear_file);
     Bitboard expected_attacks = 0xC08000000000ULL;
     char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
@@ -98,7 +99,7 @@ static char *test_white_pawn_attacks(){
     Bitboard white_pieces = 0x200000ULL;
     Bitboard black_pieces = 0x2010000000ULL;
     
-    Bitboard outcome_attacks = compute_pawn(1, pawn_loc, white_pieces, black_pieces, mask_rank, clear_file);
+    Bitboard outcome_attacks = compute_pawn(WHITE, pawn_loc, white_pieces, black_pieces, mask_rank, clear_file);
     Bitboard expected_attacks = 0x30000000ULL;
     char *message = malloc(128 * sizeof(char));
     sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
@@ -118,7 +119,7 @@ static char *all_tests() {
     return 0;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     char *result = all_tests();
     if (result != 0) {
         printf("%s\n", result);
@@ -127,10 +128,20 @@ int main() {
     }
     printf("Tests run: %d\n", tests_run);
 
-	if (result) {
-		return result;
-	}
+    if (result) {
+        return 1;
+    }
 
-	Chessboard *chessboard = initialise_chessboard();
-	game_loop(chessboard);
+    Chessboard *chessboard = create_chessboard();
+    if (chessboard == NULL) {
+        return 1;
+    }
+    if (argc > 1) {
+        char *fen = argv[1];
+        parse(chessboard, fen);
+    } else {
+        initialise_chessboard(chessboard);
+    }
+    game_loop(chessboard);  
+    return 0;
 }
