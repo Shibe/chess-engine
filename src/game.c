@@ -81,15 +81,14 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 			*en_passant_target = start >> 8;
 		} else if (end == *en_passant_target) {
 			move_piece(own_side, start, end);
-		 	{
-				if (active_player == WHITE) {
-					end = *en_passant_target >> 8;
-				} else {
-					end = *en_passant_target << 8;
-				}
-			 }
-			 move_piece(opposing_side, end, 0x0ULL);
-			 return 1;
+			if (active_player == WHITE) {
+				end = *en_passant_target >> 8;
+			} else {
+				end = *en_passant_target << 8;
+			}
+			move_piece(opposing_side, end, 0x0ULL);
+			*en_passant_target = 0x0ULL;
+			return 1;
 		} else {
 			*en_passant_target = 0x0ULL;
 		}
