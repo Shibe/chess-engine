@@ -31,4 +31,4 @@ void clear_chessboard(Chessboard *chessboard);
 void update_chessboard(Chessboard *chessboard);
 void update_pieces(Pieces *pieces);
 void print_chessboard(Chessboard *chessboard);
-char get_symbol(Pieces *pieces, int square);
+char get_symbol(Pieces *pieces, int square, int active_player);
