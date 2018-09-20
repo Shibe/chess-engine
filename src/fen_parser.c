@@ -138,7 +138,7 @@ int parse_en_passant_target(Chessboard *chessboard, char **stream) {
         return 1;
     }
     (*stream)++;
-    success = parse_rank(**stream, &file);
+    success = parse_rank(**stream, &rank);
     if (!success) {
         return 1;
     }

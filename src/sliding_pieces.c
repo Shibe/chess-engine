@@ -9,7 +9,7 @@ Bitboard compute_valid_attack(Bitboard loc, char shift_amount, Bitboard own_side
     Bitboard opp_left_shifted = opposing_side << shift_amount; 
     Bitboard opp_right_shifted = opposing_side >> shift_amount;
 
-    for (int i = 1; i <= 8; i++) { // Max tiles in a row is 8
+    for (int i = 1; i <= RANK_LEN; i++) {
         if (shift_amount == 7) {
             pos_1 = pos_1 & clear_file[FILE_A];
             pos_2 = pos_2 & clear_file[FILE_H];
