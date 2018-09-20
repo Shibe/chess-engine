@@ -93,13 +93,11 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 		} else {
 			*en_passant_target = 0x0ULL;
 		}
-		move_piece(own_side, start, end);
-		move_piece(opposing_side, end, 0x0ULL);
 	} else {
-		move_piece(own_side, start, end);
-		move_piece(opposing_side, end, 0x0ULL);
 		*en_passant_target = 0x0ULL;
 	}
+	move_piece(own_side, start, end);
+	move_piece(opposing_side, end, 0x0ULL);
 	return 1;
 }
 
