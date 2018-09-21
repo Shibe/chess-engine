@@ -223,3 +223,58 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
 
     return valid_pawn_moves;
 }
+
+int promote_pawn(int active_player, Bitboard pawn_loc, Chessboard *chessboard) {
+    int promoting = 1;
+
+    while (promoting) {
+    char piece;
+    fgets(piece, 1, stdin);
+
+        switch(piece) {
+            case 'q':
+            case 'Q':
+                if (active_player == BLACK) {                  
+                    chessboard->black_pieces->queens &= pawn_loc;
+                } else {
+                    chessboard->white_pieces->queens &= pawn_loc;
+                } 
+                promoting = 0;
+            case 'R':
+            case 'r':
+                if (active_player == BLACK) {                  
+                    chessboard->black_pieces->rooks &= pawn_loc;
+                } else {
+                    chessboard->white_pieces->rooks &= pawn_loc;
+                }
+                promoting = 0;
+            case 'n':
+            case 'N':
+                if (active_player == BLACK) {                  
+                    chessboard->black_pieces->knights &= pawn_loc;
+                } else {
+                    chessboard->white_pieces->knights &= pawn_loc;
+                }
+                promoting = 0;     
+            case 'b':
+            case 'B':
+                if (active_player == BLACK) {                  
+                    chessboard->black_pieces->bishops &= pawn_loc;
+                } else {
+                    chessboard->white_pieces->bishops &= pawn_loc;
+                }
+                promoting = 0;
+            default:
+                free(piece);
+                puts("Input not viable. Input must be 'q', 'r', 'n' or 'b'.");
+        }
+
+        if (active_player == BLACK){
+            chessboard->black_pieces->pawns &= ~pawn_loc;
+        } else {
+            chessboard->white_pieces->pawns &= ~pawn_loc;
+        }
+
+        return 0;
+    }
+}
