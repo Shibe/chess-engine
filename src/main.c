@@ -176,6 +176,11 @@ int main(int argc, char *argv[]) {
     } else {
         initialise_chessboard(chessboard);
     }
-    game_loop(chessboard);  
+    printf("lol");
+
+    // game_loop(chessboard);  
+    char *fen = malloc(128 * sizeof(char));
+    generate_fen_string(chessboard, fen);
+
     return 0;
 }
