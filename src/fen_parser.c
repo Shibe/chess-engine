@@ -13,29 +13,29 @@ int generate_fen_string(Chessboard *chessboard, char *fen){
     int y = 0;
 
     while (x) {
-        if (x && chessboard->white_pieces->bishops) {
+        if (x & chessboard->white_pieces->bishops) {
             fen[y] = 'B';
-        } else if (x && chessboard->white_pieces->king) {
+        } else if (x & chessboard->white_pieces->king) {
             fen[y] = 'K';
-        } else if (x && chessboard->white_pieces->knights) {
+        } else if (x & chessboard->white_pieces->knights) {
             fen[y] = 'N';
-        } else if (x && chessboard->white_pieces->pawns) {
+        } else if (x & chessboard->white_pieces->pawns) {
             fen[y] = 'P';
-        } else if (x && chessboard->white_pieces->queens) {
+        } else if (x & chessboard->white_pieces->queens) {
             fen[y] = 'Q';
-        } else if (x && chessboard->white_pieces->rooks) {
+        } else if (x & chessboard->white_pieces->rooks) {
             fen[y] = 'R';
-        } else if (x && chessboard->black_pieces->bishops) {
+        } else if (x & chessboard->black_pieces->bishops) {
             fen[y] = 'b';
-        } else if (x && chessboard->black_pieces->king) {
+        } else if (x & chessboard->black_pieces->king) {
             fen[y] = 'k';
-        } else if (x && chessboard->black_pieces->knights) {
+        } else if (x & chessboard->black_pieces->knights) {
             fen[y] = 'n';
-        } else if (x && chessboard->black_pieces->pawns) {
+        } else if (x & chessboard->black_pieces->pawns) {
             fen[y] = 'p';
-        } else if (x && chessboard->black_pieces->queens) {
+        } else if (x & chessboard->black_pieces->queens) { 
             fen[y] = 'q';
-        } else if (x && chessboard->black_pieces->rooks) {
+        } else if (x & chessboard->black_pieces->rooks) {
             fen[y] = 'r';
         } else {
             fen[y] = '0';
@@ -43,6 +43,14 @@ int generate_fen_string(Chessboard *chessboard, char *fen){
         x <<= 1;
         y++;
     }
+
+    fen[y] = '\0';
+
+    // for testing purposes
+    for (int i = 0; i < 64; i++){
+        printf("%c", fen[i]);
+    }
+
     return 0;
 }
 
