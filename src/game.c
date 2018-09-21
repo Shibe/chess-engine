@@ -73,16 +73,15 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	if (!is_valid_move) {
 		return 0;
 	}
-	
 
-	// if (mask_rank[RANK_8] & end) {
-	// 	promote_pawn(active_player, end, own_side);
-	// 	move_piece(own_side, start, end);
-	// }
-
-	// add pawn promoting logic here
 	if (start & own_side->pawns) {
-		if (active_player == WHITE && end == (start << 16)) {
+
+		// pawn promotion
+		if ((mask_rank[RANK_8] & end) || (mask_rank[RANK_1] & end)) {
+			promote_pawn(active_player, end, own_side);
+		}
+
+		else if (active_player == WHITE && end == (start << 16)) {
 			*en_passant_target = start << 8;
 		} else if (end == (start >> 16)) {
 			*en_passant_target = start >> 8;
