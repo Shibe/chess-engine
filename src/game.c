@@ -74,6 +74,13 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 		return 0;
 	}
 	
+
+	// if (mask_rank[RANK_8] & end) {
+	// 	promote_pawn(active_player, end, own_side);
+	// 	move_piece(own_side, start, end);
+	// }
+
+	// add pawn promoting logic here
 	if (start & own_side->pawns) {
 		if (active_player == WHITE && end == (start << 16)) {
 			*en_passant_target = start << 8;
