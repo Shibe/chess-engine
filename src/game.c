@@ -161,6 +161,32 @@ int is_stalemate(Chessboard *chessboard, int player) {
 	}
 }
 
-int is_mate(Chessboard *chessboard, int player) {
+// TODO: Ask question, merging stalemate and checked to prevent double computing, and letting return int determine game state
+// (ex: 0 is game in proress, 1 is mate, 2 is stalemate) 
+ int is_mate(Chessboard *chessboard, int player) {
+	Bitboard white_attacks = compute_attacking_squares(WHITE, &chessboard->white_pieces->all, &chessboard->black_pieces->all, chessboard->en_passant_target);
+	Bitboard black_attacks = compute_attacking_squares(BLACK, &chessboard->black_pieces->all, &chessboard->white_pieces->all, chessboard->en_passant_target);
+
+	if (player == WHITE) {
+		int in_check = is_checked(chessboard->white_pieces->king, black_attacks);
+		if (!in_check && white_attacks) {
+			return 0;
+		} else if (!in_check) {
+			return 2; // Stalemate
+		} 
+
+		Bitboard valid_king_moves = compute_king(chessboard->white_pieces->king, chessboard->black_pieces->all, clear_file);
+		valid_king_moves = valid_king_moves & ~black_attacks;
+
+	} else {
+		int in_check = is_checked(chessboard->black_pieces->king, white_attacks);
+		if (!in_check) {
+			return 0;
+		}
+
+
+	}
+	// If king has no valid moves or all valid moves are attacked by opponent and cannot be intercepted by own piece
+	// If
 	return 0;
 }
