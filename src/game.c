@@ -9,8 +9,16 @@
 
 void game_loop(Chessboard *chessboard) {
 	while (1) {
-		print_chessboard(chessboard);
 		int active_player = chessboard->active_color;
+		if (is_stalemate(chessboard, active_player)) {
+			puts("Stalemate.");
+			break;
+		} else if (is_mate(chessboard, active_player)) {
+			printf("Player %d wins", !active_player);
+			break;
+		}
+
+		print_chessboard(chessboard);
 		Bitboard start, end;
 		Pieces *own_pieces, *opposing_pieces;
 
@@ -69,8 +77,8 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	} else if (start & own_side->king) {
 		is_valid_move = end & compute_king(own_side->king & start, own_side->all, clear_file);
 	}
-
-	if (!is_valid_move) {
+	int in_check = is_checked(own_side->king, compute_attacking_squares(!active_player, opposing_side, own_side, en_passant_target));
+	if (!is_valid_move || in_check) {
 		return 0;
 	}
 	
@@ -126,16 +134,33 @@ Bitboard input_to_square(int rank, int file) {
 	return location;
 }
 
-Bitboard compute_attacked_squares(int opposing_player, Pieces *own_side, Pieces *opposing_side, Bitboard en_passant_target) {
-	Bitboard pawns = compute_pawn(opposing_player, opposing_side->pawns, opposing_side->all, en_passant_target, own_side->all, mask_rank, clear_file); //TODO: Not every valid move is an attacked square, should be split up.
-	Bitboard rooks = compute_rook(opposing_side->rooks, opposing_side->all, own_side->all, clear_file);
-	Bitboard knights = compute_knight(opposing_side->knights, opposing_side->all, clear_file);
-	Bitboard bishops = compute_bishop(opposing_side->bishops, opposing_side->all, own_side->all, clear_file);
-	Bitboard queens = compute_queen(opposing_side->queens, opposing_side->all, own_side->all, clear_file);
-	Bitboard king = compute_king(opposing_side->king, opposing_side->all, clear_file);
+Bitboard compute_attacking_squares(int player, Pieces *own_side, Pieces *opposing_side, Bitboard en_passant_target) {
+	Bitboard pawns = compute_pawn(player, own_side->pawns, own_side->all, en_passant_target, own_side->all, mask_rank, clear_file); //TODO: Not every valid move is an attacked square, should be split up.
+	Bitboard rooks = compute_rook(own_side->rooks, own_side->all, opposing_side->all, clear_file);
+	Bitboard knights = compute_knight(own_side->knights, own_side->all, clear_file);
+	Bitboard bishops = compute_bishop(own_side->bishops, own_side->all, opposing_side->all, clear_file);
+	Bitboard queens = compute_queen(own_side->queens, own_side->all, opposing_side->all, clear_file);
+	Bitboard king = compute_king(own_side->king, own_side->all, clear_file);
 	return pawns | rooks | knights | bishops | queens | king;
 }
 
 int is_checked(Bitboard king, Bitboard attacked_squares) {
 	return king & attacked_squares;
+}
+
+int is_stalemate(Chessboard *chessboard, int player) {	
+	Bitboard white_attacks = compute_attacking_squares(WHITE, &chessboard->white_pieces->all, &chessboard->black_pieces->all, chessboard->en_passant_target);
+	Bitboard black_attacks = compute_attacking_squares(BLACK, &chessboard->black_pieces->all, &chessboard->white_pieces->all, chessboard->en_passant_target);
+
+	if (player == WHITE){
+		int in_check = is_checked(chessboard->white_pieces->king, black_attacks);
+		return !in_check && ~white_attacks;
+	} else {
+		int in_check = is_checked(chessboard->black_pieces->king, white_attacks);
+		return !in_check && ~black_attacks;
+	}
+}
+
+int is_mate(Chessboard *chessboard, int player) {
+	return 0;
 }
