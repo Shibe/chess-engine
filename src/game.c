@@ -177,6 +177,11 @@ int is_stalemate(Chessboard *chessboard, int player) {
 
 		Bitboard valid_king_moves = compute_king(chessboard->white_pieces->king, chessboard->black_pieces->all, clear_file);
 		valid_king_moves = valid_king_moves & ~black_attacks;
+		if (valid_king_moves) {
+			return 0;
+		}
+		
+
 
 	} else {
 		int in_check = is_checked(chessboard->black_pieces->king, white_attacks);
