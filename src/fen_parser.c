@@ -8,60 +8,6 @@
 #include "input.h"
 #include "game.h"
 
-
-// int generate_fen_string(Chessboard *chessboard, char *fen){
-//     uint64_t x = 0x0000000000000001ULL;
-//     int y = 0;
-
-//     while (x) {
-//         if (x & chessboard->white_pieces->bishops) {
-//             fen[y] = 'B';
-//         } else if (x & chessboard->white_pieces->king) {
-//             fen[y] = 'K';
-//         } else if (x & chessboard->white_pieces->knights) {
-//             fen[y] = 'N';
-//         } else if (x & chessboard->white_pieces->pawns) {
-//             fen[y] = 'P';
-//         } else if (x & chessboard->white_pieces->queens) {
-//             fen[y] = 'Q';
-//         } else if (x & chessboard->white_pieces->rooks) {
-//             fen[y] = 'R';
-//         } else if (x & chessboard->black_pieces->bishops) {
-//             fen[y] = 'b';
-//         } else if (x & chessboard->black_pieces->king) {
-//             fen[y] = 'k';
-//         } else if (x & chessboard->black_pieces->knights) {
-//             fen[y] = 'n';
-//         } else if (x & chessboard->black_pieces->pawns) {
-//             fen[y] = 'p';
-//         } else if (x & chessboard->black_pieces->queens) { 
-//             fen[y] = 'q';
-//         } else if (x & chessboard->black_pieces->rooks) {
-//             fen[y] = 'r';
-//         } else {
-//             fen[y] = '0';
-//         }  
-
-//         if (!((y+2) % 9)) {
-//             y++;
-//             fen[y] = '/';
-//         } 
-
-//         x <<= 1;
-//         y++;
-//     }
-
-//     fen[y] = '\0';
-
-//     // for testing purposes
-//     for (int i = 0; i < 71; i++){
-//         printf("%c", fen[i]);
-       
-//     }
-
-//     return 0;
-// }
-
 int convert_empty_tiles(int *empty_tiles, char *fen) {
     if (*empty_tiles) {
         char buffer[2];
@@ -130,7 +76,6 @@ int reverse_parse_pieces(Chessboard *chessboard, char *fen) {
 
     // remove last '/'
     fen[strlen(fen)-1] = 0;
-    strcat(fen, " ");
 
     return 0;
 }
@@ -138,72 +83,155 @@ int reverse_parse_pieces(Chessboard *chessboard, char *fen) {
 int reverse_parse_active_color(Chessboard *chessboard, char *fen) {
     if (chessboard->active_color == WHITE) {
         strcat(fen, "w");
-    } else {
+        return 0;
+    } else if (chessboard->active_color == BLACK) {
         strcat(fen, "b");
+        return 0;
+    } else {
+        return 1;
     }
-    return 0;
 }
 
 int reverse_parse_castling(Chessboard *chessboard, char *fen) {
+    if (chessboard->castle_white & 1) {
+        strcat(fen, "K");
+    } else {
+        strcat(fen, "-");
+    }  
+    if (chessboard->castle_white & 2) {
+        strcat(fen, "Q");
+    } else {
+        strcat(fen, "-");
+    }
+    if (chessboard->castle_black & 1) {
+        strcat(fen, "k");
+    } else {
+        strcat(fen, "-");
+    }
+    if (chessboard->castle_black & 2) {
+        strcat(fen, "q");
+    } else {
+        strcat(fen, "-");
+    }
+
     return 0;    
 }
 
+void reverse_parse_file(int file, char *fen) {
+    switch(file) {
+        case 0:
+            strcat(fen, "a");
+        case 1:
+            strcat(fen, "b");
+        case 2:
+            strcat(fen, "c");
+        case 3:
+            strcat(fen, "d");
+        case 4:
+            strcat(fen, "e");
+        case 5:
+            strcat(fen, "f");
+        case 6:
+            strcat(fen, "g");
+        case 7:
+            strcat(fen, "h");
+    }
+}
+
+void reverse_parse_rank(int rank, char *fen) {
+    char c_rank[2];
+    itoa(rank, c_rank, 16); 
+    strcat(fen, c_rank);
+}
+
 int reverse_parse_en_pessant_target(Chessboard *chessboard, char *fen) {
+    char *c_pos = malloc(3 * sizeof(char));
+    Bitboard en_pessant_target = chessboard->en_passant_target;    
+    int counter = 0;
+    
+    if (en_pessant_target) {
+        while (en_pessant_target) {
+            en_pessant_target >>= 1;
+            counter++;
+        }
+
+        int file = (counter % 8) - 1;
+        reverse_parse_file(file, fen);
+
+        int rank = (counter / 8) + 1;
+        reverse_parse_rank(rank, fen);
+
+        return 0;
+    }
+    
+    // there is no en pessant target
+    strcat(fen, "-");
+
     return 0;  
 }
 
 int reverse_parse_halfmove_clock(Chessboard *chessboard, char *fen) {
+    int halfmove_clock = chessboard->halfmove_clock;
+    char buffer[2];
+    itoa(halfmove_clock, buffer, 16);
+    strcat(fen, buffer);
+
     return 0;
 }
 
 int reverse_parse_fullmove_number(Chessboard *chessboard, char *fen) {
+    int fullmove_number = chessboard->fullmove_number;
+    char buffer[2];
+    itoa(fullmove_number, buffer, 16);
+    strcat(fen, buffer);
+
     return 0;
 }
 
-int reverse_parse(Chessboard *chessboard, char *fen) {
+int reverse_parse(Chessboard *chessboard, char **target) {
     
-    fen = calloc(124, sizeof(char));
+    char *fen = calloc(128, sizeof(char));
     
     int err = reverse_parse_pieces(chessboard, fen);
     if (err) {
         printf("Could not reverse parse pieces.");
         return err;
     }
+    strcat(fen, " ");
     err = reverse_parse_active_color(chessboard, fen);
     if (err) {
         printf("Could not reverse parse active color");
         return err;
     }
-
+    strcat(fen, " ");
     err = reverse_parse_castling(chessboard, fen);
     if (err) {
         printf("Could not reverse parse castling");
         return err;
     }
+    strcat(fen, " ");
     err = reverse_parse_en_pessant_target(chessboard, fen);
     if (err) {
         printf("Could not reverse parse en passant target");
         return err;
     }
+    strcat(fen, " ");
     err = reverse_parse_halfmove_clock(chessboard, fen);
     if (err) {
         printf("Could not reverse parse halfmove clock");
         return err;
     }
+    strcat(fen, " ");
     err = reverse_parse_fullmove_number(chessboard, fen);
     if (err) {
         printf("Could not reverse parse fullmove number");
         return err;
     }
-
-    // for testing purposes
-    for (int i = 0; i < 71; i++){
-        printf("%c", fen[i]);     
-    }
+    
+    *target = fen;
 
     return 0;
 }
-
 
 int parse(Chessboard *chessboard, char *fen) {
     char **stream = &fen;
