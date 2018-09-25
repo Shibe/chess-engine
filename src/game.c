@@ -11,7 +11,7 @@ void game_loop(Chessboard *chessboard) {
 	while (1) {
 		print_chessboard(chessboard);
 		int active_player = chessboard->active_color;
-		Bitboard start, end;
+		Bitboard start, end, test;
 		Pieces *own_pieces, *opposing_pieces;
 
 		if (active_player == WHITE) {

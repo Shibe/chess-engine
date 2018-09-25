@@ -95,7 +95,7 @@ static char *test_black_pawn_attacks_from_start() {
     return 0;
 }
 
-static char *test_white_pawn_attacks(){
+static char *test_white_pawn_attacks() {
     Bitboard pawn_loc = 0x200000ULL;
     Bitboard white_pieces = 0x200000ULL;
     Bitboard black_pieces = 0x2010000000ULL;
@@ -110,7 +110,29 @@ static char *test_white_pawn_attacks(){
     return 0;
 }
 
-static char* test_en_passant_take() {
+// static char *test_pawn_promotion() {
+//   Chessboard *chessboard = create_chessboard();
+//   char *fen = "rnbqkrbnr/8/8/8/8/8/pPPPPPPPP/4K3 w KQkq d6 0 3";
+//   Bitboard start = 0x100ULL;
+//   Bitboard end = 0x1ULL;
+//   char *message = malloc(128 * sizeof(char));
+
+//   int error = parse(chessboard, fen); 
+//   if (error) {
+//     sprintf(message, "Could not parse fen: %s.", fen);
+//     mu_assert(message, 0);
+//   }
+//   int succes = turn(start, end, BLACK, chessboard->black_pieces, chessboard->white_pieces, &chessboard->en_passant_target);
+//   if (!succes) {
+//     sprintf(message, "Could not move piece. Start: %lx, end: %lx.", start, end);
+//     mu_assert(message, 0);
+//   }
+
+//   update_chessboard(chessboard);
+//   print_board(chessboard->black_pieces->pawns);
+// }
+
+static char *test_en_passant_take() {
     Chessboard *chessboard = create_chessboard();
     char *fen = "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3";
     Bitboard start = 0x1000000000ULL;
@@ -150,6 +172,7 @@ static char *all_tests() {
     mu_run_test(test_black_pawn_attacks_from_start);
     mu_run_test(test_white_pawn_attacks);
     mu_run_test(test_en_passant_take);
+    // mu_run_test(test_pawn_promotion);
     return 0;
 }
 
@@ -165,7 +188,7 @@ int main(int argc, char *argv[]) {
     if (result) {
         return 1;
     }
-
+asm ("");
     Chessboard *chessboard = create_chessboard();
     if (chessboard == NULL) {
         return 1;

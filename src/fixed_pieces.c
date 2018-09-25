@@ -228,10 +228,10 @@ int promote_pawn(int active_player, Bitboard pawn_loc, Pieces *own_side) {
     int promoting = 1;
 
     while (promoting) {
-    char piece;
+    char *piece;
     fgets(piece, 1, stdin);
 
-        switch(piece) {
+        switch(*piece) {
             case 'q':
             case 'Q':               
                 own_side->queens &= pawn_loc;
@@ -249,12 +249,10 @@ int promote_pawn(int active_player, Bitboard pawn_loc, Pieces *own_side) {
                 own_side->bishops &= pawn_loc;
                 promoting = 0;
             default:
-                free(piece);
                 puts("Input not viable. Input must be 'q', 'r', 'n' or 'b'.");
-        }
-
-        own_side->pawns &= ~pawn_loc;
-
-        return 0;
+        }  
     }
+    
+    own_side->pawns &= ~pawn_loc;
+    return 0;
 }
