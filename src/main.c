@@ -142,14 +142,14 @@ static char* test_en_passant_take() {
 }
 
 static char *all_tests() {
-    mu_run_test(test_king_attacks);
-    mu_run_test(test_knight_attacks);
-    mu_run_test(test_queen_attacks);
-    mu_run_test(test_rook_attacks);
-    mu_run_test(test_bishop_attacks);
-    mu_run_test(test_black_pawn_attacks_from_start);
-    mu_run_test(test_white_pawn_attacks);
-    mu_run_test(test_en_passant_take);
+    // mu_run_test(test_king_attacks);
+    // mu_run_test(test_knight_attacks);
+    // mu_run_test(test_queen_attacks);
+    // mu_run_test(test_rook_attacks);
+    // mu_run_test(test_bishop_attacks);
+    // mu_run_test(test_black_pawn_attacks_from_start);
+    // mu_run_test(test_white_pawn_attacks);
+    // mu_run_test(test_en_passant_take);
     return 0;
 }
 

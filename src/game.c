@@ -10,12 +10,13 @@
 void game_loop(Chessboard *chessboard) {
 	while (1) {
 		int active_player = chessboard->active_color;
-		if (is_stalemate(chessboard, active_player)) {
-			puts("Stalemate.");
-			break;
-		} else if (is_mate(chessboard, active_player)) {
-			printf("Player %d wins", !active_player);
-			break;
+		int game_state = is_mate(chessboard, active_player);
+		if (game_state == 2) {
+			puts("Stalemate");
+			return;
+		} else if (game_state == 1) {
+			puts("Checkmate");
+			return;
 		}
 
 		print_chessboard(chessboard);
@@ -77,8 +78,8 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	} else if (start & own_side->king) {
 		is_valid_move = end & compute_king(own_side->king & start, own_side->all, clear_file);
 	}
-	int in_check = is_checked(own_side->king, compute_attacking_squares(!active_player, opposing_side, own_side, en_passant_target));
-	if (!is_valid_move || in_check) {
+
+	if (!is_valid_move) {
 		return 0;
 	}
 	
@@ -103,7 +104,13 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	} else {
 		*en_passant_target = 0x0ULL;
 	}
+
 	move_piece(own_side, start, end);
+	Bitboard in_check = is_checked(own_side->king, compute_attacking_squares(!active_player, opposing_side, own_side, en_passant_target));
+	if (in_check) { // Moving causes king to be checked. Not allowed.
+		move_piece(own_side, end, start);
+		return 0;
+	}
 	move_piece(opposing_side, end, 0x0ULL);
 	return 1;
 }
@@ -144,13 +151,13 @@ Bitboard compute_attacking_squares(int player, Pieces *own_side, Pieces *opposin
 	return pawns | rooks | knights | bishops | queens | king;
 }
 
-int is_checked(Bitboard king, Bitboard attacked_squares) {
+Bitboard is_checked(Bitboard king, Bitboard attacked_squares) {
 	return king & attacked_squares;
 }
 
 int is_stalemate(Chessboard *chessboard, int player) {	
-	Bitboard white_attacks = compute_attacking_squares(WHITE, &chessboard->white_pieces->all, &chessboard->black_pieces->all, chessboard->en_passant_target);
-	Bitboard black_attacks = compute_attacking_squares(BLACK, &chessboard->black_pieces->all, &chessboard->white_pieces->all, chessboard->en_passant_target);
+	Bitboard white_attacks = compute_attacking_squares(WHITE, chessboard->white_pieces, chessboard->black_pieces, chessboard->en_passant_target);
+	Bitboard black_attacks = compute_attacking_squares(BLACK, chessboard->black_pieces, chessboard->white_pieces, chessboard->en_passant_target);
 
 	if (player == WHITE){
 		int in_check = is_checked(chessboard->white_pieces->king, black_attacks);
@@ -161,37 +168,130 @@ int is_stalemate(Chessboard *chessboard, int player) {
 	}
 }
 
+int calculate_stalemate(int player, Pieces *player_pieces, Pieces *opponent_pieces, Bitboard en_passant_target) {
+	Bitboard opponent_attacks = compute_attacking_squares(player, player_pieces, opponent_pieces, en_passant_target);
+	Bitboard in_check = is_checked(player_pieces->king, opponent_attacks);
+	if (in_check) {
+		return 0;
+	}
+	Bitboard valid_king_moves = compute_king(player_pieces->king, player_pieces->all, clear_file) & ~opponent_attacks;
+	if (valid_king_moves) {
+		return 0;
+	}
+	return 1;
+}
+
 // TODO: Ask question, merging stalemate and checked to prevent double computing, and letting return int determine game state
 // (ex: 0 is game in proress, 1 is mate, 2 is stalemate) 
- int is_mate(Chessboard *chessboard, int player) {
-	Bitboard white_attacks = compute_attacking_squares(WHITE, &chessboard->white_pieces->all, &chessboard->black_pieces->all, chessboard->en_passant_target);
-	Bitboard black_attacks = compute_attacking_squares(BLACK, &chessboard->black_pieces->all, &chessboard->white_pieces->all, chessboard->en_passant_target);
+int is_mate(Chessboard *chessboard, int player) {
+	Pieces *player_pieces;
+	Pieces *opponent_pieces;
+	Bitboard player_attacks;
+	Bitboard opponent_attacks;
+
+	Bitboard white_attacks = compute_attacking_squares(WHITE, chessboard->white_pieces, chessboard->black_pieces, chessboard->en_passant_target);
+	Bitboard black_attacks = compute_attacking_squares(BLACK, chessboard->black_pieces, chessboard->white_pieces, chessboard->en_passant_target);
 
 	if (player == WHITE) {
-		int in_check = is_checked(chessboard->white_pieces->king, black_attacks);
-		if (!in_check && white_attacks) {
-			return 0;
-		} else if (!in_check) {
-			return 2; // Stalemate
-		} 
-
-		Bitboard valid_king_moves = compute_king(chessboard->white_pieces->king, chessboard->black_pieces->all, clear_file);
-		valid_king_moves = valid_king_moves & ~black_attacks;
-		if (valid_king_moves) {
-			return 0;
-		}
-		
-
-
+		player_pieces = chessboard->white_pieces;
+		opponent_pieces = chessboard->black_pieces;
+		player_attacks = white_attacks;
+		opponent_attacks = black_attacks; 
 	} else {
-		int in_check = is_checked(chessboard->black_pieces->king, white_attacks);
-		if (!in_check) {
+		player_pieces = chessboard->black_pieces;
+		opponent_pieces = chessboard->white_pieces;
+		player_attacks = black_attacks;
+		opponent_attacks = white_attacks; 
+	}
+	
+	Bitboard in_check = is_checked(player_pieces->king, opponent_attacks);
+	if (!in_check) {
+		if (calculate_stalemate(player, player_pieces, opponent_pieces, chessboard->en_passant_target)) { // Check for stalemate.
+			return 2;
+		} else {
 			return 0;
 		}
-
-
 	}
-	// If king has no valid moves or all valid moves are attacked by opponent and cannot be intercepted by own piece
-	// If
-	return 0;
+
+	Bitboard valid_king_moves = compute_king(player_pieces->king, opponent_pieces->all, clear_file);
+	valid_king_moves = valid_king_moves & ~black_attacks;
+	if (valid_king_moves) {
+		return 0;
+	}
+
+	Bitboard attacks_on_king = compute_queen(player_pieces->king, player_pieces->all, opponent_pieces->all, clear_file) & compute_queen(opponent_pieces->queens, opponent_pieces->all, player_pieces->all, clear_file);
+								compute_bishop(player_pieces->king, player_pieces->all, opponent_pieces->all, clear_file) & compute_bishop(opponent_pieces->bishops, opponent_pieces->all, player_pieces->all, clear_file) |
+								compute_rook(player_pieces->king, player_pieces->all, opponent_pieces->all, clear_file) & compute_rook(opponent_pieces->king, opponent_pieces->all, player_pieces->all, clear_file) |
+								compute_knight(player_pieces->king, player_pieces->all, clear_file) & compute_knight(opponent_pieces->king, opponent_pieces->all, clear_file) |
+								compute_pawn(player, player_pieces->king, player_pieces->all, opponent_pieces->all, chessboard->en_passant_target, mask_rank, clear_file) &
+									compute_pawn(!player, opponent_pieces->pawns, opponent_pieces->all, player_pieces->all, chessboard->en_passant_target, mask_rank, clear_file);
+
+	// If move and not pin, not checkmate
+	Bitboard possible_block_or_capture = player_attacks & attacks_on_king;
+	if (!possible_block_or_capture) {
+		return 1;
+	}
+	for (Bitboard a = 1ULL; a != 0; a = a<<1) {
+		if (player_pieces->pawns & a) {
+			Bitboard intercepts = compute_pawn(player, player_pieces->pawns & a, player_pieces->all, opponent_pieces->all, chessboard->en_passant_target, mask_rank, clear_file) & possible_block_or_capture;
+			if (intercepts && (!(intercepts&(intercepts-1)))) { // If the amount of intecepts is divisible by 2 (only 1 bit is set to 1)
+				Bitboard copy = player_pieces->pawns;
+				player_pieces->pawns = (player_pieces->pawns & ~a) | intercepts;
+				Bitboard checked = is_checked(player_pieces->king, compute_attacking_squares(!player, opponent_pieces, player_pieces, chessboard->en_passant_target));
+				player_pieces->pawns = copy;
+				if (!checked) {
+					return 0;	
+				}
+			}
+		}
+		if (player_pieces->queens & a) {
+			Bitboard intercepts = compute_queen(player_pieces->queens & a, player_pieces->all, opponent_pieces->all, clear_file) & possible_block_or_capture;
+			if (intercepts && (!(intercepts&(intercepts-1)))) { // If the amount of intecepts is divisible by 2 (only 1 bit is set to 1)
+				Bitboard copy = player_pieces->queens;
+				player_pieces->queens = (player_pieces->queens & ~a) | intercepts;
+				Bitboard checked = is_checked(player_pieces->king, compute_attacking_squares(!player, opponent_pieces, player_pieces, chessboard->en_passant_target));
+				player_pieces->queens = copy;
+				if (!checked) {
+					return 0;	
+				}
+			}
+		}
+		if (player_pieces->rooks & a) {
+			Bitboard intercepts = compute_rook(player_pieces->rooks & a, player_pieces->all, opponent_pieces->all, clear_file) & possible_block_or_capture;
+			if (intercepts && (!(intercepts&(intercepts-1)))) { // If the amount of intecepts is divisible by 2 (only 1 bit is set to 1)
+				Bitboard copy = player_pieces->rooks;
+				player_pieces->rooks = (player_pieces->rooks & ~a) | intercepts;
+				Bitboard checked = is_checked(player_pieces->king, compute_attacking_squares(!player, opponent_pieces, player_pieces, chessboard->en_passant_target));
+				player_pieces->rooks = copy;
+				if (!checked) {
+					return 0;	
+				}
+			}
+		}
+		if (player_pieces->bishops & a) {
+			Bitboard intercepts = compute_bishop(player_pieces->bishops & a, player_pieces->all, opponent_pieces->all, clear_file) & possible_block_or_capture;
+			if (intercepts && (!(intercepts&(intercepts-1)))) { // If the amount of intecepts is divisible by 2 (only 1 bit is set to 1)
+				Bitboard copy = player_pieces->bishops;
+				player_pieces->bishops = (player_pieces->bishops & ~a) | intercepts;
+				Bitboard checked = is_checked(player_pieces->king, compute_attacking_squares(!player, opponent_pieces, player_pieces, chessboard->en_passant_target));
+				player_pieces->bishops = copy;
+				if (!checked) {
+					return 0;	
+				}
+			}
+		}
+		if (player_pieces->knights & a) {
+			Bitboard intercepts = compute_knight(player_pieces->knights & a, player_pieces->all, clear_file) & possible_block_or_capture;
+			if (intercepts && (!(intercepts&(intercepts-1)))) { // If the amount of intecepts is divisible by 2 (only 1 bit is set to 1)
+				Bitboard copy = player_pieces->knights;
+				player_pieces->knights = (player_pieces->knights & ~a) | intercepts;
+				Bitboard checked = is_checked(player_pieces->king, compute_attacking_squares(!player, opponent_pieces, player_pieces, chessboard->en_passant_target));
+				player_pieces->knights = copy;
+				if (!checked) {
+					return 0;	
+				}
+			}
+		}
+	}
+	return 1;
 }
