@@ -176,11 +176,10 @@ int main(int argc, char *argv[]) {
     } else {
         initialise_chessboard(chessboard);
     }
-    printf("lol");
 
     // game_loop(chessboard);  
     char *fen = malloc(128 * sizeof(char));
-    generate_fen_string(chessboard, fen);
+    reverse_parse(chessboard, fen);
 
     return 0;
 }

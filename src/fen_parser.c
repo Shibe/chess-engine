@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "bitboard.h"
 #include "chessboard.h"
 #include "fen_parser.h"
@@ -8,51 +9,201 @@
 #include "game.h"
 
 
-int generate_fen_string(Chessboard *chessboard, char *fen){
-    uint64_t x = 0x0000000000000001ULL;
-    int y = 0;
+// int generate_fen_string(Chessboard *chessboard, char *fen){
+//     uint64_t x = 0x0000000000000001ULL;
+//     int y = 0;
 
-    while (x) {
+//     while (x) {
+//         if (x & chessboard->white_pieces->bishops) {
+//             fen[y] = 'B';
+//         } else if (x & chessboard->white_pieces->king) {
+//             fen[y] = 'K';
+//         } else if (x & chessboard->white_pieces->knights) {
+//             fen[y] = 'N';
+//         } else if (x & chessboard->white_pieces->pawns) {
+//             fen[y] = 'P';
+//         } else if (x & chessboard->white_pieces->queens) {
+//             fen[y] = 'Q';
+//         } else if (x & chessboard->white_pieces->rooks) {
+//             fen[y] = 'R';
+//         } else if (x & chessboard->black_pieces->bishops) {
+//             fen[y] = 'b';
+//         } else if (x & chessboard->black_pieces->king) {
+//             fen[y] = 'k';
+//         } else if (x & chessboard->black_pieces->knights) {
+//             fen[y] = 'n';
+//         } else if (x & chessboard->black_pieces->pawns) {
+//             fen[y] = 'p';
+//         } else if (x & chessboard->black_pieces->queens) { 
+//             fen[y] = 'q';
+//         } else if (x & chessboard->black_pieces->rooks) {
+//             fen[y] = 'r';
+//         } else {
+//             fen[y] = '0';
+//         }  
+
+//         if (!((y+2) % 9)) {
+//             y++;
+//             fen[y] = '/';
+//         } 
+
+//         x <<= 1;
+//         y++;
+//     }
+
+//     fen[y] = '\0';
+
+//     // for testing purposes
+//     for (int i = 0; i < 71; i++){
+//         printf("%c", fen[i]);
+       
+//     }
+
+//     return 0;
+// }
+
+int convert_empty_tiles(int *empty_tiles, char *fen) {
+    if (*empty_tiles) {
+        char buffer[2];
+
+        itoa(*empty_tiles, buffer, 16);
+        strcat(fen, buffer);
+        *empty_tiles = 0;
+    }
+    return 0;
+}
+
+// rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+
+int reverse_parse_pieces(Chessboard *chessboard, char *fen) {
+    int empty_tiles = 0;
+    uint64_t x = 0x0000000000000001ULL;
+    
+    while (x) {      
         if (x & chessboard->white_pieces->bishops) {
-            fen[y] = 'B';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "B");
         } else if (x & chessboard->white_pieces->king) {
-            fen[y] = 'K';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "K");
         } else if (x & chessboard->white_pieces->knights) {
-            fen[y] = 'N';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "N");
         } else if (x & chessboard->white_pieces->pawns) {
-            fen[y] = 'P';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "P");
         } else if (x & chessboard->white_pieces->queens) {
-            fen[y] = 'Q';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "Q");
         } else if (x & chessboard->white_pieces->rooks) {
-            fen[y] = 'R';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "R");
         } else if (x & chessboard->black_pieces->bishops) {
-            fen[y] = 'b';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "b");
         } else if (x & chessboard->black_pieces->king) {
-            fen[y] = 'k';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "k");
         } else if (x & chessboard->black_pieces->knights) {
-            fen[y] = 'n';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "n");
         } else if (x & chessboard->black_pieces->pawns) {
-            fen[y] = 'p';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "p");
         } else if (x & chessboard->black_pieces->queens) { 
-            fen[y] = 'q';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "q");
         } else if (x & chessboard->black_pieces->rooks) {
-            fen[y] = 'r';
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "r");
         } else {
-            fen[y] = '0';
-        }   
-        x <<= 1;
-        y++;
+            empty_tiles += 1;
+        }  
+
+        if (!(clear_file[FILE_H] & x)){
+            convert_empty_tiles(&empty_tiles, fen);
+            strcat(fen, "/");
+        }
+
+        x <<= 1;    
     }
 
-    fen[y] = '\0';
+    // remove last '/'
+    fen[strlen(fen)-1] = 0;
+    strcat(fen, " ");
+
+    return 0;
+}
+
+int reverse_parse_active_color(Chessboard *chessboard, char *fen) {
+    if (chessboard->active_color == WHITE) {
+        strcat(fen, "w");
+    } else {
+        strcat(fen, "b");
+    }
+    return 0;
+}
+
+int reverse_parse_castling(Chessboard *chessboard, char *fen) {
+    return 0;    
+}
+
+int reverse_parse_en_pessant_target(Chessboard *chessboard, char *fen) {
+    return 0;  
+}
+
+int reverse_parse_halfmove_clock(Chessboard *chessboard, char *fen) {
+    return 0;
+}
+
+int reverse_parse_fullmove_number(Chessboard *chessboard, char *fen) {
+    return 0;
+}
+
+int reverse_parse(Chessboard *chessboard, char *fen) {
+    
+    fen = calloc(124, sizeof(char));
+    
+    int err = reverse_parse_pieces(chessboard, fen);
+    if (err) {
+        printf("Could not reverse parse pieces.");
+        return err;
+    }
+    err = reverse_parse_active_color(chessboard, fen);
+    if (err) {
+        printf("Could not reverse parse active color");
+        return err;
+    }
+
+    err = reverse_parse_castling(chessboard, fen);
+    if (err) {
+        printf("Could not reverse parse castling");
+        return err;
+    }
+    err = reverse_parse_en_pessant_target(chessboard, fen);
+    if (err) {
+        printf("Could not reverse parse en passant target");
+        return err;
+    }
+    err = reverse_parse_halfmove_clock(chessboard, fen);
+    if (err) {
+        printf("Could not reverse parse halfmove clock");
+        return err;
+    }
+    err = reverse_parse_fullmove_number(chessboard, fen);
+    if (err) {
+        printf("Could not reverse parse fullmove number");
+        return err;
+    }
 
     // for testing purposes
-    for (int i = 0; i < 64; i++){
-        printf("%c", fen[i]);
+    for (int i = 0; i < 71; i++){
+        printf("%c", fen[i]);     
     }
 
     return 0;
 }
+
 
 int parse(Chessboard *chessboard, char *fen) {
     char **stream = &fen;
