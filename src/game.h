@@ -9,7 +9,6 @@ void game_loop(Chessboard *chessboard);
 Bitboard input_to_square(int rank, int file);
 Bitboard compute_attacking_squares(int player, Pieces *own_side, Pieces *opposing_side, Bitboard en_passant_target);
 int get_player_move(Bitboard *start, Bitboard *end);
-int is_stalemate(Chessboard *chessboard, int player);
 int calculate_stalemate(int player, Pieces *player_pieces, Pieces *opponent_pieces, Bitboard en_passant_target);
 
 #endif
