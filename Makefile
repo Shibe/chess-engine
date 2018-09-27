@@ -11,7 +11,7 @@ $(OBJ)/%.o: $(SRC)/%.c
 	$(CC) -g -c $< -o $@
 
 program: $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(BIN)/$@
+	$(CC) -g $(OBJECTS) -o $(BIN)/$@
 
 clean:
 	-rm $(OBJ)/*
