@@ -23,18 +23,19 @@ int get_gamestate(Chessboard *chessboard, int player) {
 	
 	Bitboard in_check = is_checked(player_pieces->king, opponent_attacks);
 	if (!in_check) {
-		return is_stalemate(player_pieces->king, opponent_attacks, player_attacks);
+		return is_stalemate(player_pieces->king, player_pieces->all, opponent_attacks, player_attacks);
 	}
 
 	return is_mate(player, player_pieces, opponent_pieces, player_attacks, opponent_attacks, chessboard);
 }
 
-int is_stalemate(Bitboard king, Bitboard opponent_attacks, Bitboard player_attacks) {
+int is_stalemate(Bitboard king, Bitboard own_side, Bitboard opponent_attacks, Bitboard player_attacks) {
 	if (king & opponent_attacks) { // King is in check
 		return GS_ACTIVE;
 	}
-	Bitboard king_moves = compute_king(king, 0x0ULL, clear_file) & ~opponent_attacks;
-	if (king_moves || player_attacks) { // Still valid moves left
+
+	Bitboard king_moves = compute_king(king, own_side, clear_file);
+	if (king_moves & ~opponent_attacks || player_attacks & ~king_moves) { // Still valid moves left
 		return GS_ACTIVE;
 	}
 	return GS_STALEMATE;
