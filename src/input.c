@@ -1,6 +1,7 @@
 #include "input.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h> // for tolower
 
 int read_move(int *start_file, int *start_rank, int *end_file, int *end_rank) {
 	char raw_move[6];
@@ -13,7 +14,7 @@ int read_move(int *start_file, int *start_rank, int *end_file, int *end_rank) {
 }
 
 int parse_file(char c, int *file) {
-	switch(c) {
+	switch(tolower(c)) {
 		case 'a':
 			*file = 0;
 			return 1;
