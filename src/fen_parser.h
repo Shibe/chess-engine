@@ -9,4 +9,4 @@ int parse_en_passant_target(Chessboard *chessboard, char **stream);
 int parse_halfmove_clock(Chessboard *chessboard, char **stream);
 int parse_fullmove_number(Chessboard *chessboard, char **stream);
 int token_to_chessboard(char token, Bitboard location, Chessboard *chessboard);
-int reverse_parse(Chessboard *chessboard, char **fen);
+int create_fen(Chessboard *chessboard, char **fen);

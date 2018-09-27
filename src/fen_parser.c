@@ -19,59 +19,61 @@ int convert_empty_tiles(int *empty_tiles, char *fen) {
     return 0;
 }
 
-// rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-
 int reverse_parse_pieces(Chessboard *chessboard, char *fen) {
     int empty_tiles = 0;
-    uint64_t x = 0x0000000000000001ULL;
-    
-    while (x) {      
-        if (x & chessboard->white_pieces->bishops) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "B");
-        } else if (x & chessboard->white_pieces->king) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "K");
-        } else if (x & chessboard->white_pieces->knights) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "N");
-        } else if (x & chessboard->white_pieces->pawns) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "P");
-        } else if (x & chessboard->white_pieces->queens) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "Q");
-        } else if (x & chessboard->white_pieces->rooks) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "R");
-        } else if (x & chessboard->black_pieces->bishops) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "b");
-        } else if (x & chessboard->black_pieces->king) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "k");
-        } else if (x & chessboard->black_pieces->knights) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "n");
-        } else if (x & chessboard->black_pieces->pawns) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "p");
-        } else if (x & chessboard->black_pieces->queens) { 
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "q");
-        } else if (x & chessboard->black_pieces->rooks) {
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "r");
-        } else {
-            empty_tiles += 1;
-        }  
+    uint64_t original = 0x100000000000000ULL;
 
-        if (!(clear_file[FILE_H] & x)){
-            convert_empty_tiles(&empty_tiles, fen);
-            strcat(fen, "/");
+    while (original) {
+        uint64_t x = original;
+
+        for (int i = 0; i < FILE_LEN; i++) {
+            if (x & chessboard->white_pieces->bishops) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "B");
+            } else if (x & chessboard->white_pieces->king) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "K");
+            } else if (x & chessboard->white_pieces->knights) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "N");
+            } else if (x & chessboard->white_pieces->pawns) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "P");
+            } else if (x & chessboard->white_pieces->queens) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "Q");
+            } else if (x & chessboard->white_pieces->rooks) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "R");
+            } else if (x & chessboard->black_pieces->bishops) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "b");
+            } else if (x & chessboard->black_pieces->king) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "k");
+            } else if (x & chessboard->black_pieces->knights) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "n");
+            } else if (x & chessboard->black_pieces->pawns) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "p");
+            } else if (x & chessboard->black_pieces->queens) { 
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "q");
+            } else if (x & chessboard->black_pieces->rooks) {
+                convert_empty_tiles(&empty_tiles, fen);
+                strcat(fen, "r");
+            } else {
+                empty_tiles += 1;
+            }   
+
+            x <<= 1;
         }
 
-        x <<= 1;    
+        convert_empty_tiles(&empty_tiles, fen);
+        strcat(fen, "/");
+
+        original >>= 8;
     }
 
     // remove last '/'
@@ -121,20 +123,28 @@ void reverse_parse_file(int file, char *fen) {
     switch(file) {
         case 0:
             strcat(fen, "a");
+            break;
         case 1:
             strcat(fen, "b");
+            break;
         case 2:
             strcat(fen, "c");
+            break;
         case 3:
             strcat(fen, "d");
+            break;
         case 4:
             strcat(fen, "e");
+            break;
         case 5:
             strcat(fen, "f");
+            break;
         case 6:
             strcat(fen, "g");
+            break;
         case 7:
             strcat(fen, "h");
+            break;
     }
 }
 
@@ -188,7 +198,7 @@ int reverse_parse_fullmove_number(Chessboard *chessboard, char *fen) {
     return 0;
 }
 
-int reverse_parse(Chessboard *chessboard, char **target) {
+int create_fen(Chessboard *chessboard, char **target) {
     
     char *fen = calloc(128, sizeof(char));
     
@@ -227,9 +237,8 @@ int reverse_parse(Chessboard *chessboard, char **target) {
         printf("Could not reverse parse fullmove number");
         return err;
     }
-    
-    *target = fen;
 
+    *target = fen;
     return 0;
 }
 
@@ -281,6 +290,8 @@ int parse_whitespace(char **stream) {
     }
     return 0;
 }
+
+// 1 -> left shift (7 * 8 + 0)
 
 int parse_pieces(Chessboard *chessboard, char **stream) {
     int current_rank = RANK_8; 
