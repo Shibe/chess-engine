@@ -224,35 +224,38 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
     return valid_pawn_moves;
 }
 
-int promote_pawn(int active_player, Bitboard pawn_loc, Pieces *own_side) {
+int promote_pawn(Pieces *own_side, Bitboard start, Bitboard end) {
     int promoting = 1;
-
     while (promoting) {
-    char *piece;
-    fgets(piece, 1, stdin);
-
-        switch(*piece) {
+        char piece[3];
+        printf("Which piece do you want? Input must be 'q', 'r', 'n' or 'b'\n");
+        scanf("%c", piece);
+        switch(piece[0]) {
             case 'q':
             case 'Q':               
-                own_side->queens &= pawn_loc;
+                own_side->queens |= end;
                 promoting = 0;
+                break;
             case 'R':
             case 'r':
-                own_side->rooks &= pawn_loc;
+                own_side->rooks |= end;      
                 promoting = 0;
+                break;
             case 'n':
             case 'N':
-                own_side->knights &= pawn_loc;
-                promoting = 0;     
+                own_side->knights |= end;
+                promoting = 0;    
+                break; 
             case 'b':
             case 'B':
-                own_side->bishops &= pawn_loc;
+                own_side->bishops |= end;
                 promoting = 0;
+                break;
             default:
-                puts("Input not viable. Input must be 'q', 'r', 'n' or 'b'.");
-        }  
+                puts("Input not valid. Input must be 'q', 'r', 'n' or 'b'."); 
+        }
     }
     
-    own_side->pawns &= ~pawn_loc;
+    own_side->pawns &= ~start;
     return 0;
 }

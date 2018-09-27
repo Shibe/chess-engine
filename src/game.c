@@ -51,7 +51,6 @@ int get_player_move(Bitboard *start, Bitboard *end) {
 
 int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Pieces *opposing_side, Bitboard *en_passant_target) {
 	Bitboard is_valid_move = 0x0ULL;
-
 	if (!(own_side->all & start)) {
 		return 0;
 	}
@@ -75,13 +74,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	}
 
 	if (start & own_side->pawns) {
-
-		// pawn promotion
-		if ((mask_rank[RANK_8] & end) || (mask_rank[RANK_1] & end)) {
-			promote_pawn(active_player, end, own_side);
-		}
-
-		else if (active_player == WHITE && end == (start << 16)) {
+		if (active_player == WHITE && end == (start << 16)) {
 			*en_passant_target = start << 8;
 		} else if (end == (start >> 16)) {
 			*en_passant_target = start >> 8;
@@ -108,6 +101,10 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 
 int move_piece(Pieces *pieces, Bitboard start, Bitboard end) {
 	if (start & pieces->pawns) {
+		if ((mask_rank[RANK_8] & end) || (mask_rank[RANK_1] & end)) {
+			promote_pawn(pieces, start, end);
+			return 1;
+		}
 		pieces->pawns = (pieces->pawns & ~start) | end;
 	} else if (start & pieces->rooks) {
 		pieces->rooks = (pieces->rooks & ~start) | end;

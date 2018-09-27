@@ -110,27 +110,30 @@ static char *test_white_pawn_attacks() {
     return 0;
 }
 
-// static char *test_pawn_promotion() {
-//   Chessboard *chessboard = create_chessboard();
-//   char *fen = "rnbqkrbnr/8/8/8/8/8/pPPPPPPPP/4K3 w KQkq d6 0 3";
-//   Bitboard start = 0x100ULL;
-//   Bitboard end = 0x1ULL;
-//   char *message = malloc(128 * sizeof(char));
+static char *test_pawn_promotion() {
+  Chessboard *chessboard = create_chessboard();
 
-//   int error = parse(chessboard, fen); 
-//   if (error) {
-//     sprintf(message, "Could not parse fen: %s.", fen);
-//     mu_assert(message, 0);
-//   }
-//   int succes = turn(start, end, BLACK, chessboard->black_pieces, chessboard->white_pieces, &chessboard->en_passant_target);
-//   if (!succes) {
-//     sprintf(message, "Could not move piece. Start: %lx, end: %lx.", start, end);
-//     mu_assert(message, 0);
-//   }
+  // "rnbqkrbnr/8/8/8/8/p7/1PPPPPPPP/4K3 w KQkq d6 0 3";
+  char *fen = "4k3/Pppppppp/8/8/8/8/1PPPPPPPP/4K3 w KQkq d6 0 3";
+  Bitboard start = 0x1000000000000ULL;
+  Bitboard end = 0x100000000000000ULL;
+  char *message = malloc(128 * sizeof(char));
 
-//   update_chessboard(chessboard);
-//   print_board(chessboard->black_pieces->pawns);
-// }
+  int error = parse(chessboard, fen); 
+  if (error) {
+    sprintf(message, "Could not parse fen: %s.", fen);
+    mu_assert(message, 0);
+  }
+
+  int succes = turn(start, end, WHITE, chessboard->white_pieces, chessboard->black_pieces, &chessboard->en_passant_target);
+  if (!succes) {
+    sprintf(message, "Could not move piece. Start: %lx, end: %lx.", start, end);
+    mu_assert(message, 0);
+  }
+  update_chessboard(chessboard);
+
+  return 0;
+}
 
 static char *test_en_passant_take() {
     Chessboard *chessboard = create_chessboard();
@@ -164,15 +167,15 @@ static char *test_en_passant_take() {
 }
 
 static char *all_tests() {
-    mu_run_test(test_king_attacks);
-    mu_run_test(test_knight_attacks);
-    mu_run_test(test_queen_attacks);
-    mu_run_test(test_rook_attacks);
-    mu_run_test(test_bishop_attacks);
-    mu_run_test(test_black_pawn_attacks_from_start);
-    mu_run_test(test_white_pawn_attacks);
-    mu_run_test(test_en_passant_take);
-    // mu_run_test(test_pawn_promotion);
+    // mu_run_test(test_king_attacks);
+    // mu_run_test(test_knight_attacks);
+    // mu_run_test(test_queen_attacks);
+    // mu_run_test(test_rook_attacks);
+    // mu_run_test(test_bishop_attacks);
+    // mu_run_test(test_black_pawn_attacks_from_start);
+    // mu_run_test(test_white_pawn_attacks);
+    // mu_run_test(test_en_passant_take);
+    mu_run_test(test_pawn_promotion);
     return 0;
 }
 
@@ -188,7 +191,7 @@ int main(int argc, char *argv[]) {
     if (result) {
         return 1;
     }
-asm ("");
+    asm ("");
     Chessboard *chessboard = create_chessboard();
     if (chessboard == NULL) {
         return 1;
@@ -199,6 +202,6 @@ asm ("");
     } else {
         initialise_chessboard(chessboard);
     }
-    game_loop(chessboard);  
+    // game_loop(chessboard);  
     return 0;
 }
