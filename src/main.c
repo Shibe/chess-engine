@@ -19,7 +19,7 @@ static char *test_king_attacks() {
     Bitboard outcome_attacks = compute_king(king_loc, white_pieces, clear_file);
     Bitboard expected_attacks = 0xC000C0000000ULL;
 		char *message = malloc(128 * sizeof(char)); 
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
 		free(message);
     return 0;
@@ -32,9 +32,9 @@ static char *test_knight_attacks() {
     Bitboard outcome_attacks = compute_knight(knight_loc, white_pieces, clear_file);
     Bitboard expected_attacks = 0x68640044280000ULL;
     char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
-		free(message);
+	free(message);
     return 0;
 }
 
@@ -46,7 +46,7 @@ static char *test_queen_attacks() {
     Bitboard outcome_attacks = compute_queen(queen_loc, white_pieces, black_pieces, clear_file);
     Bitboard expected_attacks = 0x925438EF380000ULL;
     char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
 		free(message);
     return 0;
@@ -60,7 +60,7 @@ static char *test_rook_attacks() {
     Bitboard outcome_attacks = compute_rook(rook_loc, white_pieces, black_pieces, clear_file);
     Bitboard expected_attacks = 0x101010EF100000ULL;
     char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
 		free(message);
     return 0;
@@ -74,7 +74,7 @@ static char *test_bishop_attacks() {
     Bitboard outcome_attacks = compute_bishop(bishop_loc, white_pieces, black_pieces, clear_file);
     Bitboard expected_attacks = 0x82442800280000ULL;
     char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
 		free(message);
     return 0;
@@ -89,7 +89,7 @@ static char *test_black_pawn_attacks_from_start() {
     Bitboard outcome_attacks = compute_pawn(BLACK, pawn_loc, black_pieces, white_pieces, en_passant_target, mask_rank, clear_file);
     Bitboard expected_attacks = 0xC08000000000ULL;
     char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
 		free(message);
     return 0;
@@ -104,7 +104,7 @@ static char *test_white_pawn_attacks(){
     Bitboard outcome_attacks = compute_pawn(WHITE, pawn_loc, white_pieces, black_pieces, en_passant_target, mask_rank, clear_file);
     Bitboard expected_attacks = 0x30000000ULL;
     char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %lx != expected: %lx", outcome_attacks, expected_attacks);
+    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
     mu_assert(message, outcome_attacks == expected_attacks);
     free(message);
     return 0;
@@ -123,7 +123,7 @@ static char* test_en_passant_take() {
     }
     int success = turn(start, end, chessboard->active_color, chessboard->white_pieces, chessboard->black_pieces, &chessboard->en_passant_target);
     if (!success) {
-        sprintf(message, "Could not move piece. En passant: %lx, start: %lx, end: %lx.", chessboard->en_passant_target, start, end);
+        sprintf(message, "Could not move piece. En passant: %llx, start: %llx, end: %llx.", chessboard->en_passant_target, start, end);
         mu_assert(message, 0);        
     }
     update_chessboard(chessboard);
@@ -131,10 +131,10 @@ static char* test_en_passant_take() {
     int white_moved = (chessboard->white_pieces->pawns & end) == end;
     int black_removed = (chessboard->black_pieces->pawns & (end << 8)) == 0x0ULL;
     if (!white_moved) {
-        sprintf(message, "White pawn moves incorrectly; outcome: %lx",  chessboard->white_pieces->pawns & end);
+        sprintf(message, "White pawn moves incorrectly; outcome: %llx",  chessboard->white_pieces->pawns & end);
         mu_assert(message, 0);
     } else if (!black_removed) {
-        sprintf(message, "Black pawn removed incorrectly; outcome: %lx",  chessboard->black_pieces->pawns & (end << 8));
+        sprintf(message, "Black pawn removed incorrectly; outcome: %llx",  chessboard->black_pieces->pawns & (end << 8));
         mu_assert(message, 0);
     }
     free(message);
@@ -142,14 +142,14 @@ static char* test_en_passant_take() {
 }
 
 static char *all_tests() {
-    // mu_run_test(test_king_attacks);
-    // mu_run_test(test_knight_attacks);
-    // mu_run_test(test_queen_attacks);
-    // mu_run_test(test_rook_attacks);
-    // mu_run_test(test_bishop_attacks);
-    // mu_run_test(test_black_pawn_attacks_from_start);
-    // mu_run_test(test_white_pawn_attacks);
-    // mu_run_test(test_en_passant_take);
+    mu_run_test(test_king_attacks);
+    mu_run_test(test_knight_attacks);
+    mu_run_test(test_queen_attacks);
+    mu_run_test(test_rook_attacks);
+    mu_run_test(test_bishop_attacks);
+    mu_run_test(test_black_pawn_attacks_from_start);
+    mu_run_test(test_white_pawn_attacks);
+    mu_run_test(test_en_passant_take);
     return 0;
 }
 
