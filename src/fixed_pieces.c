@@ -231,7 +231,7 @@ int promote_pawn(Pieces *own_side, Bitboard start, Bitboard end) {
     int promoting = 1;
     while (promoting) {
         char piece[3];
-        printf("Which piece do you want? Input must be 'q', 'r', 'n' or 'b'\n");
+        puts("Which piece do you want? Input must be 'q', 'r', 'n' or 'b'");
         scanf("%s", piece);
         switch(tolower(piece[0])) {
             case 'q':                      
