@@ -117,7 +117,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	move_piece(&opponent_side_copy, end, 0x0ULL);
 	update_pieces(&own_side_copy);
 	update_pieces(&opponent_side_copy);
-	Bitboard in_check = is_checked(own_side_copy.king, compute_attacking_squares(!active_player, &opponent_side_copy, &own_side_copy, en_passant_target));
+	Bitboard in_check = is_checked(own_side_copy.king, compute_attacking_squares(!active_player, &opponent_side_copy, &own_side_copy, *en_passant_target));
 	if (in_check) { // Moving causes king to be checked. Not allowed.
 		return 0;
 	}
