@@ -103,7 +103,15 @@ void update_pieces(Pieces *pieces) {
 }
 
 void print_chessboard(Chessboard *chessboard) {
+	char rank_symbols[] = "ABCDEFGH";
+	printf("  ");
+	for (int i = 0; i < sizeof(rank_symbols); i++) {
+		printf("%c ", rank_symbols[i]);
+	}
+	puts("");
+
 	for (int i = RANK_8; i >= RANK_1; i--) {
+		printf("%d ", i + 1);
 		for (int j = FILE_A; j <= FILE_H; j++) {
 			char c;
 			c = get_symbol(chessboard->black_pieces, j+8*i, BLACK);
@@ -118,8 +126,15 @@ void print_chessboard(Chessboard *chessboard) {
 				}
 			}
 		}
+		printf("%d", i + 1);
 		printf ("\n");
 	}
+
+	printf("  ");
+	for (int i = 0; i < sizeof(rank_symbols); i++) {
+		printf("%c ", rank_symbols[i]);
+	}
+	puts("");
 }
 
 char get_symbol(Pieces *pieces, int square, int active_player) {
