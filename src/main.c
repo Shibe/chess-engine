@@ -172,7 +172,10 @@ int main(int argc, char *argv[]) {
     }
     if (argc > 1) {
         char *fen = argv[1];
-        parse_fen(chessboard, fen);
+        int err = parse_fen(chessboard, fen);
+        if (err) {
+            return 1;
+        }
     } else {
         initialise_chessboard(chessboard);
     }
