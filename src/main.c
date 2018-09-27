@@ -9,9 +9,9 @@
 #include "minunit.h"
 #include "game.h"
 #include "fen_parser.h"
+#include "greatest.h"
 
 int tests_run = 0;
-
 static char *test_king_attacks() {
     Bitboard king_loc = 0x8000000000ULL;
     Bitboard white_pieces = 0xC000000000ULL;
@@ -153,7 +153,15 @@ static char *all_tests() {
     return 0;
 }
 
+SUITE_EXTERN(other_suite);
+
+GREATEST_MAIN_DEFS();
+
 int main(int argc, char *argv[]) {
+    GREATEST_MAIN_BEGIN();
+    RUN_SUITE(other_suite);
+    GREATEST_MAIN_END();
+
     char *result = all_tests();
     if (result != 0) {
         printf("%s\n", result);
