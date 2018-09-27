@@ -55,9 +55,9 @@ void game_loop(Chessboard *chessboard) {
 
 int get_player_move(Bitboard *start, Bitboard *end) {
 	int start_file, start_rank, end_file, end_rank;
-	int correct_move = read_move(&start_file, &start_rank, &end_file, &end_rank);
-	if (!correct_move) {
-		return 1;
+	int move_error = read_move(&start_file, &start_rank, &end_file, &end_rank);
+	if (move_error) {
+		return -1;
 	}
 	*start = input_to_square(start_rank, start_file);
 	*end = input_to_square(end_rank ,end_file);
