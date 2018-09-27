@@ -18,7 +18,11 @@ void game_loop(Chessboard *chessboard) {
 			puts("Stalemate");
 			return;
 		} else if (game_state == GS_MATE) {
-			puts("Checkmate");
+			if (active_player == WHITE){
+				puts("Black mated white");
+			} else {
+				puts("White mated black");
+			}
 			return;
 		}
 
