@@ -103,6 +103,10 @@ void update_pieces(Pieces *pieces) {
 }
 
 void print_chessboard(Chessboard *chessboard) {
+	char *file_symbols = "ABCDEFGH";
+	for (int i = 0; i < sizeof(*file_symbols); i++){
+		printf("%d", sizeof(file_symbols));
+	}
 	for (int i = RANK_8; i >= RANK_1; i--) {
 		for (int j = FILE_A; j <= FILE_H; j++) {
 			char c;
