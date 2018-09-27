@@ -1,6 +1,6 @@
 #include "bitboard.h"
 
-int parse(Chessboard *chessboard, char *fen);
+int parse_fen(Chessboard *chessboard, char *fen);
 int parse_whitespace(char **stream);
 int parse_pieces(Chessboard *chessboard, char **stream);
 int parse_active_color(Chessboard *chessboard, char **stream);

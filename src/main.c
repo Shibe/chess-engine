@@ -116,7 +116,7 @@ static char* test_en_passant_take() {
     Bitboard start = 0x1000000000ULL;
     Bitboard end = 0x80000000000ULL;
     char *message = malloc(128 * sizeof(char));
-    int error = parse(chessboard, fen);
+    int error = parse_fen(chessboard, fen);
     if (error) {
         sprintf(message, "Could not parse fen: %s.", fen);
         mu_assert(message, 0);
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
     }
     if (argc > 1) {
         char *fen = argv[1];
-        parse(chessboard, fen);
+        parse_fen(chessboard, fen);
     } else {
         initialise_chessboard(chessboard);
     }
