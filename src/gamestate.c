@@ -63,7 +63,8 @@ int is_mate(int player, Pieces *player_pieces, Pieces *opponent_pieces, Bitboard
 
 		Bitboard valid_positions;
 		if (p & player_pieces->pawns) {
-			valid_positions = compute_pawn(player, player_pieces->pawns & p, player_pieces->all, opponent_pieces->all, chessboard->en_passant_target, mask_rank, clear_file);
+			valid_positions = compute_pawn_moves(player, player_pieces->pawns & p, player_pieces->all, opponent_pieces->all, mask_rank)
+			| compute_pawn_attacks(player, player_pieces->pawns & p, opponent_pieces->all, chessboard->en_passant_target, clear_file);		
 		} else if (p & player_pieces->rooks) {
 			valid_positions = compute_rook(player_pieces->rooks & p, player_pieces->all, opponent_pieces->all, clear_file);
 		} else if (p & player_pieces->knights) {
@@ -134,7 +135,7 @@ Bitboard is_checked(Bitboard king, Bitboard attacked_squares) {
 }
 
 Bitboard compute_attacking_squares(int player, Pieces *own_side, Pieces *opposing_side, Bitboard en_passant_target) {
-	Bitboard pawns = compute_pawn(player, own_side->pawns, own_side->all, opposing_side->all, en_passant_target, mask_rank, clear_file);
+	Bitboard pawns = compute_pawn_attacks(player, own_side->pawns, opposing_side->all, en_passant_target, clear_file);	
 	Bitboard rooks = compute_rook(own_side->rooks, own_side->all, opposing_side->all, clear_file);
 	Bitboard knights = compute_knight(own_side->knights, own_side->all, clear_file);
 	Bitboard bishops = compute_bishop(own_side->bishops, own_side->all, opposing_side->all, clear_file);
