@@ -2,16 +2,22 @@ CC := gcc
 BIN := bin
 SRC := src
 OBJ := obj
-HEADERS := $(wildcard $(SRC)/*.c)
-OBJECTS := $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(HEADERS))
+C_FILES := $(wildcard $(SRC)/*.c)
+OBJECTS_TEST:= $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(filter-out $(SRC)/main.c, $(C_FILES)))
+OBJECTS_BUILD := $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(filter-out $(wildcard $(SRC)/*_tests.c), $(C_FILES)))
+ 
+test: clean program_test
+
+program_test: $(OBJECTS_TEST)
+	$(CC) -g $(OBJECTS_TEST) -o $(BIN)/program
 
 build: clean program
 
+program: $(OBJECTS_BUILD)
+	$(CC) -g $(OBJECTS_BUILD) -o $(BIN)/$@
+
 $(OBJ)/%.o: $(SRC)/%.c 
 	$(CC) -g -c $< -o $@
-
-program: $(OBJECTS)
-	$(CC) -g $(OBJECTS) -o $(BIN)/$@
 
 clean:
 	-rm $(OBJ)/*
