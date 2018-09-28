@@ -125,32 +125,34 @@ int serialize_castling(Chessboard *chessboard, char *fen) {
     return 0;    
 }
 
-void serialize_file(int file, char *fen) {
+int serialize_file(int file, char *fen) {
     switch(file) {
         case 0:
             strcat(fen, "a");
-            break;
+            return 0;
         case 1:
             strcat(fen, "b");
-            break;
+            return 0;
         case 2:
             strcat(fen, "c");
-            break;
+            return 0;
         case 3:
             strcat(fen, "d");
-            break;
+            return 0;
         case 4:
             strcat(fen, "e");
-            break;
+            return 0;
         case 5:
             strcat(fen, "f");
-            break;
+            return 0;
         case 6:
             strcat(fen, "g");
-            break;
+            return 0;
         case 7:
             strcat(fen, "h");
-            break;
+            return 0;
+        default:
+            return -1;
     }
 }
 
@@ -171,7 +173,10 @@ int serialize_en_passant_target(Chessboard *chessboard, char *fen) {
         }
 
         int file = (counter % 8) - 1;
-        serialize_file(file, fen);
+        int err = serialize_file(file, fen);
+        if (err) {
+            puts("Could not serialize file");
+        }
 
         int rank = (counter / 8) + 1;
         serialize_rank(rank, fen);
