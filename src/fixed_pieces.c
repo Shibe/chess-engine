@@ -1,6 +1,9 @@
 #include "bitboard.h"
-#include "stdio.h"
 #include "chessboard.h"
+
+#include <stdio.h>
+#include <ctype.h>
+
 /*
     Basic idea: 
 
@@ -222,4 +225,36 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
     Bitboard valid_pawn_moves = move | attack;
 
     return valid_pawn_moves;
+}
+
+int promote_pawn(Pieces *own_side, Bitboard start, Bitboard end) {
+    int promoting = 1;
+    while (promoting) {
+        char piece[3];
+        puts("Which piece do you want? Input must be 'q', 'r', 'n' or 'b'");
+        scanf("%s", piece);
+        switch(tolower(piece[0])) {
+            case 'q':                      
+                own_side->queens |= end;
+                promoting = 0;
+                break;         
+            case 'r':
+                own_side->rooks |= end;      
+                promoting = 0;
+                break;
+            case 'n':       
+                own_side->knights |= end;
+                promoting = 0;    
+                break; 
+            case 'b':
+                own_side->bishops |= end;
+                promoting = 0;
+                break;
+            default:
+                puts("Input not valid. Input must be 'q', 'r', 'n' or 'b'."); 
+        }
+    }
+    
+    own_side->pawns &= ~start;
+    return 0;
 }
