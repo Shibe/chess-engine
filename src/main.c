@@ -185,6 +185,7 @@ int main(int argc, char *argv[]) {
     } else {
         initialise_chessboard(chessboard);
     }
-  
+    game_loop(chessboard);
+    
     return 0;
 }

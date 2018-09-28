@@ -6,11 +6,11 @@
 #include <ctype.h>
 #include <string.h>
 
+// converts the empty tiles to a single character
 int serialize_empty_tiles(int *empty_tiles, char *fen) {
     if (*empty_tiles) {
         char buffer[3];
-
-        itoa(*empty_tiles, buffer, 10);
+        sprintf(buffer, "%d", *empty_tiles);
         strcat(fen, buffer);
         *empty_tiles = 0;
     }
@@ -69,7 +69,7 @@ int serialize_chessboard(Chessboard *chessboard, char *fen) {
                 serialize_empty_tiles(&empty_tiles, fen);
                 int err = serialize_piece(x, chessboard, fen);
                 if (err) {
-                    printf("Could not serialize chessboard piece to a character.\n");
+                    puts("Could not serialize chessboard piece to a character.");
                 }
             } else {
                 empty_tiles += 1;
@@ -80,11 +80,11 @@ int serialize_chessboard(Chessboard *chessboard, char *fen) {
         strcat(fen, "/");
 
         active_square >>= 8;
+        
     }
-
+    
     // remove last '/'
     fen[strlen(fen)-1] = 0;
-
     return 0;
 }
 
@@ -156,7 +156,7 @@ void serialize_file(int file, char *fen) {
 
 void serialize_rank(int rank, char *fen) {
     char c_rank[3];
-    itoa(rank, c_rank, 10); 
+    sprintf(c_rank, "%d", rank);
     strcat(fen, c_rank);
 }
 
@@ -187,8 +187,8 @@ int serialize_en_passant_target(Chessboard *chessboard, char *fen) {
 
 int serialize_halfmove_clock(Chessboard *chessboard, char *fen) {
     int halfmove_clock = chessboard->halfmove_clock;
-    char buffer[2];
-    itoa(halfmove_clock, buffer, 16);
+    char buffer[4];
+    sprintf(buffer, "%d", halfmove_clock);
     strcat(fen, buffer);
 
     return 0;
@@ -205,41 +205,41 @@ int serialize_fullmove_number(Chessboard *chessboard, char *fen) {
 
 int serialize_fen(Chessboard *chessboard, char **target) {
     
-    char fen[128];
+    char *fen = calloc(128, sizeof(char));
     
     int err = serialize_chessboard(chessboard, fen);
     if (err) {
-        printf("Could not reverse parse pieces.");
+        puts("Could not reverse parse pieces.");
         return err;
     }
     strcat(fen, " ");
     err = serialize_active_color(chessboard, fen);
     if (err) {
-        printf("Could not reverse parse active color");
+        puts("Could not reverse parse active color");
         return err;
     }
     strcat(fen, " ");
     err = serialize_castling(chessboard, fen);
     if (err) {
-        printf("Could not reverse parse castling");
+        puts("Could not reverse parse castling");
         return err;
     }
     strcat(fen, " ");
     err = serialize_en_passant_target(chessboard, fen);
     if (err) {
-        printf("Could not reverse parse en passant target");
+        puts("Could not reverse parse en passant target");
         return err;
     }
     strcat(fen, " ");
     err = serialize_halfmove_clock(chessboard, fen);
     if (err) {
-        printf("Could not reverse parse halfmove clock");
+        puts("Could not reverse parse halfmove clock");
         return err;
     }
     strcat(fen, " ");
     err = serialize_fullmove_number(chessboard, fen);
     if (err) {
-        printf("Could not reverse parse fullmove number");
+        puts("Could not reverse parse fullmove number");
         return err;
     }
 
