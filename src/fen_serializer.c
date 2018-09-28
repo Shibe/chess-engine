@@ -96,7 +96,7 @@ int serialize_active_color(Chessboard *chessboard, char *fen) {
         strcat(fen, "b");
         return 0;
     } else {
-        return 1;
+        return -1;
     }
 }
 
