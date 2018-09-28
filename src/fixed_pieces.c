@@ -227,6 +227,7 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
     return valid_pawn_moves;
 }
 
+//TODO: whenever promoting occurs, asks two times for promotion. This needs to be fixed.
 int promote_pawn(Pieces *own_side, Bitboard start, Bitboard end) {
     int promoting = 1;
     while (promoting) {
