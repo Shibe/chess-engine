@@ -145,6 +145,10 @@ Bitboard compute_attacking_squares(int player, Pieces *own_side, Pieces *opposin
 
 int move_piece(Pieces *pieces, Bitboard start, Bitboard end) {
 	if (start & pieces->pawns) {
+		if ((mask_rank[RANK_8] & end) || (mask_rank[RANK_1] & end)) {
+			promote_pawn(pieces, start, end);
+			return 0;
+		}
 		pieces->pawns = (pieces->pawns & ~start) | end;
 	} else if (start & pieces->rooks) {
 		pieces->rooks = (pieces->rooks & ~start) | end;

@@ -66,7 +66,6 @@ int get_player_move(Bitboard *start, Bitboard *end) {
 
 int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Pieces *opposing_side, Bitboard *en_passant_target) {
 	Bitboard is_valid_move = 0x0ULL;
-
 	if (!(own_side->all & start)) {
 		return 0;
 	}
@@ -88,7 +87,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	if (!is_valid_move) {
 		return 0;
 	}
-	
+
 	if (start & own_side->pawns) {
 		if (active_player == WHITE && end == (start << 16)) {
 			*en_passant_target = start << 8;
