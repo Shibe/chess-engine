@@ -9,6 +9,7 @@
 #include "minunit.h"
 #include "game.h"
 #include "fen_parser.h"
+#include "fen_serializer.h"
 
 int tests_run = 0;
 
@@ -145,7 +146,7 @@ static char* test_create_fen() {
     Chessboard *chessboard = create_chessboard();
     char *fen = "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3";
     parse(chessboard, fen);
-    create_fen(chessboard, &fen);
+    serialize_fen(chessboard, &fen);
 }
 
 static char *all_tests() {
