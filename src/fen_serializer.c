@@ -175,7 +175,7 @@ int serialize_en_passant_target(Chessboard *chessboard, char *fen) {
         int file = (counter % 8) - 1;
         int err = serialize_file(file, fen);
         if (err) {
-            puts("Could not serialize file");
+            puts("Could not serialize file.");
         }
 
         int rank = (counter / 8) + 1;
@@ -214,37 +214,37 @@ int serialize_fen(Chessboard *chessboard, char **target) {
     
     int err = serialize_chessboard(chessboard, fen);
     if (err) {
-        puts("Could not reverse parse pieces.");
+        puts("Could not serialize chessboard.");
         return err;
     }
     strcat(fen, " ");
     err = serialize_active_color(chessboard, fen);
     if (err) {
-        puts("Could not reverse parse active color");
+        puts("Could not serialize active color");
         return err;
     }
     strcat(fen, " ");
     err = serialize_castling(chessboard, fen);
     if (err) {
-        puts("Could not reverse parse castling");
+        puts("Could not serialize castling");
         return err;
     }
     strcat(fen, " ");
     err = serialize_en_passant_target(chessboard, fen);
     if (err) {
-        puts("Could not reverse parse en passant target");
+        puts("Could not serialize en passant target");
         return err;
     }
     strcat(fen, " ");
     err = serialize_halfmove_clock(chessboard, fen);
     if (err) {
-        puts("Could not reverse parse halfmove clock");
+        puts("Could not serialize halfmove clock");
         return err;
     }
     strcat(fen, " ");
     err = serialize_fullmove_number(chessboard, fen);
     if (err) {
-        puts("Could not reverse parse fullmove number");
+        puts("Could not serialize fullmove number");
         return err;
     }
 
