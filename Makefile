@@ -2,8 +2,8 @@ CC := gcc
 BIN := bin
 SRC := src
 OBJ := obj
-HEADERS := $(wildcard $(SRC)/*.h)
-OBJECTS := $(patsubst $(SRC)/%.h, $(OBJ)/%.o, $(HEADERS))
+HEADERS := $(wildcard $(SRC)/*.c)
+OBJECTS := $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(HEADERS))
 
 build: clean program
 
