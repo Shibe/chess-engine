@@ -101,24 +101,24 @@ int serialize_active_color(Chessboard *chessboard, char *fen) {
 }
 
 int serialize_castling(Chessboard *chessboard, char *fen) {
+    int castling_options = 0;
     if (chessboard->castle_white & 1) {
         strcat(fen, "K");
-    } else {
-        strcat(fen, "-");
-    }  
+        castling_options += 1;
+    }
     if (chessboard->castle_white & 2) {
         strcat(fen, "Q");
-    } else {
-        strcat(fen, "-");
-    }
+        castling_options += 1;
+    } 
     if (chessboard->castle_black & 1) {
         strcat(fen, "k");
-    } else {
-        strcat(fen, "-");
-    }
+        castling_options += 1;
+    } 
     if (chessboard->castle_black & 2) {
         strcat(fen, "q");
-    } else {
+        castling_options += 1;
+    }    
+    if (!castling_options) {
         strcat(fen, "-");
     }
 
