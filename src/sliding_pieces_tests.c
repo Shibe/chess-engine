@@ -17,6 +17,6 @@ TEST test_compute_bishop(void) {
 
 SUITE(sliding_pieces_suite) {
 	RUN_TEST(test_compute_queen);
-    RUN_TEST(test_compute_rook);
+	RUN_TEST(test_compute_rook);
 	RUN_TEST(test_compute_bishop);
 }

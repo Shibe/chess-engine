@@ -37,7 +37,7 @@ TEST test_move_piece(void) {
 
 SUITE(gamestate_suite) {
 	RUN_TEST(test_is_mate);
-    RUN_TEST(test_is_stalemate);
+	RUN_TEST(test_is_stalemate);
 	RUN_TEST(test_get_gamestate);
 	RUN_TEST(test_attempt_move);
 	RUN_TEST(test_attack_square);
