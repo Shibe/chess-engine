@@ -1,13 +1,11 @@
 #include "bitboard.h"
+#include "chessboard.h"
 #ifndef GAME_FILE
 #define GAME_FILE
 
-int is_checked(Bitboard king, Bitboard attacked_squares);
-int move_piece(Pieces *pieces, Bitboard start, Bitboard end);
 int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Pieces *opposing_side, Bitboard *en_passant_target);
 void game_loop(Chessboard *chessboard);
 Bitboard input_to_square(int rank, int file);
-Bitboard compute_attacked_squares(int opposing_player, Pieces *own_side, Pieces *opposing_side, Bitboard en_passant_target);
 int get_player_move(Bitboard *start, Bitboard *end);
 
 #endif

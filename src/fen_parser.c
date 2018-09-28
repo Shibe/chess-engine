@@ -8,7 +8,7 @@
 #include "game.h"
 
 
-int parse(Chessboard *chessboard, char *fen) {
+int parse_fen(Chessboard *chessboard, char *fen) {
     char **stream = &fen;
     int err = parse_pieces(chessboard, stream);
     if (err) {
@@ -133,14 +133,14 @@ int parse_en_passant_target(Chessboard *chessboard, char **stream) {
     }
 
     int file, rank;
-    int success = parse_file(**stream, &file);
-    if (!success) {
-        return 1;
+    int error = parse_file(**stream, &file);
+    if (error) {
+        return -1;
     }
     (*stream)++;
-    success = parse_rank(**stream, &rank);
-    if (!success) {
-        return 1;
+    error = parse_rank(**stream, &rank);
+    if (error) {
+        return -1;
     }
     (*stream)++;
     Bitboard target = input_to_square(rank, file);

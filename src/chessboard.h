@@ -1,5 +1,7 @@
 #include "bitboard.h"
 
+#ifndef CHESSBOARD_FILE
+#define CHESSBOARD_FILE
 enum player_color { WHITE, BLACK };
 enum castling { NONE = 0, SHORT = 1, LONG = 2 };
 
@@ -32,3 +34,5 @@ void update_chessboard(Chessboard *chessboard);
 void update_pieces(Pieces *pieces);
 void print_chessboard(Chessboard *chessboard);
 char get_symbol(Pieces *pieces, int square, int active_player);
+
+#endif
