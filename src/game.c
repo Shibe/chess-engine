@@ -72,9 +72,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	}
 	
 	if (start & own_side->pawns) {
-		is_valid_move = end & 
-		(compute_pawn_moves(active_player, own_side->pawns & start, own_side->all, opposing_side->all, mask_rank)
-		| compute_pawn_attacks(active_player, own_side->pawns & start, opposing_side->all, *en_passant_target, clear_file));
+		is_valid_move = end & compute_valid_pawn_moves(active_player, own_side->pawns & start, own_side->all, opposing_side->all, *en_passant_target, clear_file, mask_rank);
 	} else if (start & own_side->rooks) {
 		is_valid_move = end & compute_rook(own_side->rooks & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->knights) {

@@ -233,3 +233,12 @@ Bitboard compute_pawn_moves(int active_player, Bitboard pawn_loc, Bitboard own_s
 
     return valid_pawn_moves;
 }
+
+Bitboard compute_valid_pawn_moves (int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard en_passant_target, 
+    Bitboard clear_file[FILE_LEN], Bitboard mask_rank[RANK_LEN]) {
+
+    Bitboard valid_pawn_moves = compute_pawn_attacks(active_player, pawn_loc, opposing_side, en_passant_target, clear_file) 
+        | compute_pawn_moves(active_player, pawn_loc, own_side, opposing_side, mask_rank);
+
+    return valid_pawn_moves;
+}

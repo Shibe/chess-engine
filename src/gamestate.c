@@ -62,9 +62,8 @@ int is_mate(int player, Pieces *player_pieces, Pieces *opponent_pieces, Bitboard
 		}
 
 		Bitboard valid_positions;
-		if (p & player_pieces->pawns) {
-			valid_positions = compute_pawn_moves(player, player_pieces->pawns & p, player_pieces->all, opponent_pieces->all, mask_rank)
-			| compute_pawn_attacks(player, player_pieces->pawns & p, opponent_pieces->all, chessboard->en_passant_target, clear_file);		
+		if (p & player_pieces->pawns) {		
+			valid_positions = compute_valid_pawn_moves(player, player_pieces->pawns & p, player_pieces->all, opponent_pieces->all, chessboard->en_passant_target, clear_file, mask_rank);		
 		} else if (p & player_pieces->rooks) {
 			valid_positions = compute_rook(player_pieces->rooks & p, player_pieces->all, opponent_pieces->all, clear_file);
 		} else if (p & player_pieces->knights) {
