@@ -45,7 +45,7 @@ void game_loop(Chessboard *chessboard) {
 			continue;
 		}
 
-		int success = turn(start, end, active_player, own_pieces, opposing_pieces, &chessboard->en_passant_target);
+		int success = turn(chessboard, start, end, active_player, own_pieces, opposing_pieces);
 		if (success) {
 			update_chessboard(chessboard);
 			chessboard->active_color = !active_player;
@@ -64,7 +64,7 @@ int get_player_move(Bitboard *start, Bitboard *end) {
 	return 0;
 }
 
-int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Pieces *opposing_side, Bitboard *en_passant_target) {
+int turn(Chessboard *chessboard, Bitboard start, Bitboard end, Pieces *own_side, Pieces *opposing_side) {
 	Bitboard is_valid_move = 0x0ULL;
 
 	if (!(own_side->all & start)) {
@@ -72,7 +72,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	}
 	
 	if (start & own_side->pawns) {
-		is_valid_move = end & compute_pawn(active_player, own_side->pawns & start, own_side->all, opposing_side->all, *en_passant_target, mask_rank, clear_file);
+		is_valid_move = end & compute_pawn(chessboard->active_color, own_side->pawns & start, own_side->all, opposing_side->all, chessboard->en_passant_target, mask_rank, clear_file);
 	} else if (start & own_side->rooks) {
 		is_valid_move = end & compute_rook(own_side->rooks & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->knights) {
@@ -90,25 +90,31 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	}
 	
 	if (start & own_side->pawns) {
-		if (active_player == WHITE && end == (start << 16)) {
-			*en_passant_target = start << 8;
+		if (chessboard->active_color == WHITE && end == (start << 16)) {
+			chessboard->en_passant_target = start << 8;
 		} else if (end == (start >> 16)) {
-			*en_passant_target = start >> 8;
-		} else if (end == *en_passant_target) {
+			chessboard->en_passant_target = start >> 8;
+		} else if (end == chessboard->en_passant_target) {
 			move_piece(own_side, start, end);
-			if (active_player == WHITE) {
-				end = *en_passant_target >> 8;
+			if (chessboard->active_color == WHITE) {
+				end = chessboard->en_passant_target >> 8;
 			} else {
-				end = *en_passant_target << 8;
+				end = chessboard->en_passant_target << 8;
 			}
 			move_piece(opposing_side, end, 0x0ULL);
-			*en_passant_target = 0x0ULL;
+			chessboard->en_passant_target = 0x0ULL;
 			return 1;
 		} else {
-			*en_passant_target = 0x0ULL;
+			chessboard->en_passant_target = 0x0ULL;
 		}
 	} else {
-		*en_passant_target = 0x0ULL;
+		chessboard->en_passant_target = 0x0ULL;
+	}
+
+	if (start & own_side->king) {
+		if (((start >> 2) & end) || ((start << 2) & end)) {
+			
+		}
 	}
 
 	Pieces own_side_copy = *own_side;
@@ -117,7 +123,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	move_piece(&opponent_side_copy, end, 0x0ULL);
 	update_pieces(&own_side_copy);
 	update_pieces(&opponent_side_copy);
-	Bitboard in_check = is_checked(own_side_copy.king, compute_attacking_squares(!active_player, &opponent_side_copy, &own_side_copy, *en_passant_target));
+	Bitboard in_check = is_checked(own_side_copy.king, compute_attacking_squares(!chessboard->active_color, &opponent_side_copy, &own_side_copy, chessboard->en_passant_target));
 	if (in_check) { // Moving causes king to be checked. Not allowed.
 		return 0;
 	}

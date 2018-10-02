@@ -121,7 +121,7 @@ static char* test_en_passant_take() {
         sprintf(message, "Could not parse fen: %s.", fen);
         mu_assert(message, 0);
     }
-    int success = turn(start, end, chessboard->active_color, chessboard->white_pieces, chessboard->black_pieces, &chessboard->en_passant_target);
+    int success = turn(chessboard, start, end, chessboard->white_pieces, chessboard->black_pieces);
     if (!success) {
         sprintf(message, "Could not move piece. En passant: %llx, start: %llx, end: %llx.", chessboard->en_passant_target, start, end);
         mu_assert(message, 0);        
