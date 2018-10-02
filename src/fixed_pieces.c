@@ -127,6 +127,53 @@ Bitboard compute_king(Bitboard king_loc, Bitboard own_side, Bitboard clear_file[
     return valid_king_attacks;
 }
 
+Bitboard check_available_tiles(Chessboard *chessboard, Bitboard start_loc, int shift_direction, int shift_amount) {
+    Bitboard active_tile = start_loc;
+    
+    for (int i = 0; i < shift_amount; i++) {
+        if (shift_direction == RIGHT) {
+            active_tile >>= 1;
+        } else {
+            active_tile <<= 1;
+        }           
+        if (active_tile & chessboard->all_pieces) {
+            return 0x0ULL;
+        }
+    }
+    return active_tile;
+}
+
+
+Bitboard compute_castling(int active_player, Chessboard *chessboard) {
+    Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL;
+
+    if (active_player == WHITE) {
+        if (chessboard->castle_white & LONG) {
+            pos_1 = check_available_tiles(chessboard, chessboard->white_pieces->king, RIGHT, 3);
+            if (pos_1) {
+                pos_1 <<= 1;
+            }
+        }
+        if (chessboard->castle_white & SHORT) {
+            pos_2 = check_available_tiles(chessboard, chessboard->white_pieces->king, LEFT, 2);
+        }
+    } else {
+        if (chessboard->castle_black & LONG) {
+            pos_1 = check_available_tiles(chessboard, chessboard->white_pieces->king, LEFT, 3);
+             if (pos_1) {
+                pos_1 >>= 1;
+            }
+        }
+        if (chessboard->castle_black & SHORT) {
+            pos_2 = check_available_tiles(chessboard, chessboard->white_pieces->king, RIGHT, 2);
+        }
+    }
+    
+    Bitboard valid_castling_moves = pos_1 | pos_2;
+
+    return valid_castling_moves;
+}
+
 /*
 	Basic idea for knights:
 

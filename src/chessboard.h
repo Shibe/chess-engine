@@ -3,6 +3,7 @@
 #ifndef CHESSBOARD_FILE
 #define CHESSBOARD_FILE
 enum player_color { WHITE, BLACK };
+enum direction { LEFT, RIGHT };
 enum castling { NONE = 0, SHORT = 1, LONG = 2 };
 
 typedef struct {

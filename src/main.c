@@ -171,7 +171,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     if (argc > 1) {
-        char *fen = argv[1];
+        // char *fen = argv[1];
+        char *fen = "rnbqkbnr/ppp2ppp/3pp3/1PPPP1P1/6P1/1NBQ4/P4BNP/R3K2R w KQkq - 0 1";
         int err = parse_fen(chessboard, fen);
         if (err) {
             return 1;
@@ -179,6 +180,10 @@ int main(int argc, char *argv[]) {
     } else {
         initialise_chessboard(chessboard);
     }
+    clear_chessboard(chessboard);
+       char *fen = "rnbqkbnr/ppp2ppp/3pp3/1PPPP1P1/6P1/1NBQ4/P4BNP/R3K2R w KQkq - 0 1";
+        int err = parse_fen(chessboard, fen);
+    compute_castling(WHITE, chessboard);
     game_loop(chessboard);  
     return 0;
 }
