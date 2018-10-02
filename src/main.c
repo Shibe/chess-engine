@@ -95,21 +95,6 @@ static char *test_black_pawn_moves_from_start() {
     return 0;
 }
 
-static char *test_white_pawn_attacks() {
-    Bitboard pawn_loc = 0x200000ULL;
-    Bitboard white_pieces = 0x200000ULL;
-    Bitboard black_pieces = 0x2010000000ULL;
-    Bitboard en_passant_target = 0x0ULL;
-
-    Bitboard outcome_attacks = compute_pawn(WHITE, pawn_loc, white_pieces, black_pieces, en_passant_target, mask_rank, clear_file);
-    Bitboard expected_attacks = 0x30000000ULL;
-    char *message = malloc(128 * sizeof(char));
-    sprintf(message, "outcome: %llx != expected: %llx", outcome_attacks, expected_attacks);
-    mu_assert(message, outcome_attacks == expected_attacks);
-    free(message);
-    return 0;
-}
-
 // static char *test_pawn_promotion() {
 //   Chessboard *chessboard = create_chessboard();
 
