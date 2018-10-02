@@ -119,11 +119,11 @@ void print_chessboard(Chessboard *chessboard) {
 		for (int j = FILE_A; j <= FILE_H; j++) {
 			char c;
 			c = get_symbol(chessboard->black_pieces, j+8*i, BLACK);
-			if (c != '0') {
+			if (c != '.') {
 				printf(COLOR_RED "%c " RESET, c);
 			} else {
 				c = get_symbol(chessboard->white_pieces, j+8*i, WHITE);
-				if (c == '0') {
+				if (c == '.') {
 					printf("%c ", c);
 				} else {
 					printf(COLOR_GREEN "%c " RESET, c);
@@ -153,7 +153,7 @@ char get_symbol(Pieces *pieces, int square, int active_player) {
 	} else if (pieces->king & mask) {
 		token = 'k';
 	} else {
-		token = '0';
+		token = '.';
 	}
 	if (active_player == BLACK) {
 		return token;
