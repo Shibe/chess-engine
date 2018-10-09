@@ -45,7 +45,7 @@ void game_loop(Chessboard *chessboard) {
 			continue;
 		}
 
-		int success = turn(chessboard, start, end, active_player, own_pieces, opposing_pieces);
+		int success = turn(chessboard, start, end, own_pieces, opposing_pieces);
 		if (success) {
 			update_chessboard(chessboard);
 			chessboard->active_color = !active_player;
@@ -82,7 +82,7 @@ int turn(Chessboard *chessboard, Bitboard start, Bitboard end, Pieces *own_side,
 	} else if (start & own_side->queens) {
 		is_valid_move = end & compute_queen(own_side->queens & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->king) {
-		is_valid_move = end & compute_king(own_side->king & start, own_side->all, clear_file);
+		is_valid_move = end & (compute_king(own_side->king & start, own_side->all, clear_file) | compute_castling(chessboard));
 	}
 
 	if (!is_valid_move) {
@@ -112,8 +112,14 @@ int turn(Chessboard *chessboard, Bitboard start, Bitboard end, Pieces *own_side,
 	}
 
 	if (start & own_side->king) {
-		if (((start >> 2) & end) || ((start << 2) & end)) {
-			
+		if ((start >> 2	) & end) {
+			printf("1");
+			own_side->rooks |= (end << 1);
+			own_side->rooks &= ~(end >> 2);
+		} else if ((start << 2) & end) {
+			printf("2");
+			own_side->rooks |= (end >> 1);
+			own_side->rooks &= ~(end << 1);
 		}
 	}
 

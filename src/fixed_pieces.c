@@ -144,10 +144,10 @@ Bitboard check_available_tiles(Chessboard *chessboard, Bitboard start_loc, int s
 }
 
 
-Bitboard compute_castling(int active_player, Chessboard *chessboard) {
+Bitboard compute_castling(Chessboard *chessboard) {
     Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL;
 
-    if (active_player == WHITE) {
+    if (chessboard->active_color == WHITE) {
         if (chessboard->castle_white & LONG) {
             pos_1 = check_available_tiles(chessboard, chessboard->white_pieces->king, RIGHT, 3);
             if (pos_1) {
@@ -159,13 +159,13 @@ Bitboard compute_castling(int active_player, Chessboard *chessboard) {
         }
     } else {
         if (chessboard->castle_black & LONG) {
-            pos_1 = check_available_tiles(chessboard, chessboard->white_pieces->king, LEFT, 3);
+            pos_1 = check_available_tiles(chessboard, chessboard->black_pieces->king, RIGHT, 3);
              if (pos_1) {
-                pos_1 >>= 1;
+                pos_1 <<= 1;
             }
         }
         if (chessboard->castle_black & SHORT) {
-            pos_2 = check_available_tiles(chessboard, chessboard->white_pieces->king, RIGHT, 2);
+            pos_2 = check_available_tiles(chessboard, chessboard->black_pieces->king, LEFT, 2);
         }
     }
     
@@ -173,6 +173,8 @@ Bitboard compute_castling(int active_player, Chessboard *chessboard) {
 
     return valid_castling_moves;
 }
+
+Bitboard compute_valid_king_moves(){}
 
 /*
 	Basic idea for knights:

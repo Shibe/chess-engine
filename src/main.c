@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     clear_chessboard(chessboard);
        char *fen = "rnbqkbnr/ppp2ppp/3pp3/1PPPP1P1/6P1/1NBQ4/P4BNP/R3K2R w KQkq - 0 1";
         int err = parse_fen(chessboard, fen);
-    compute_castling(WHITE, chessboard);
+    compute_castling(chessboard);
     game_loop(chessboard);  
     return 0;
 }
