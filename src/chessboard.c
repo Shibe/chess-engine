@@ -102,24 +102,39 @@ void update_pieces(Pieces *pieces) {
 		pieces->bishops | pieces->queens | pieces->king;
 }
 
+static void print_files() {
+	char file_symbols[] = "ABCDEFGH";
+	printf("  ");
+	for (int i = 0; i < sizeof(file_symbols); i++) {
+		printf("%c ", file_symbols[i]);
+	}
+	puts("");
+}
+
 void print_chessboard(Chessboard *chessboard) {
+	print_files();
+
 	for (int i = RANK_8; i >= RANK_1; i--) {
+		printf("%d ", i + 1);
 		for (int j = FILE_A; j <= FILE_H; j++) {
 			char c;
 			c = get_symbol(chessboard->black_pieces, j+8*i, BLACK);
-			if (c != '0') {
+			if (c != '.') {
 				printf(COLOR_RED "%c " RESET, c);
 			} else {
 				c = get_symbol(chessboard->white_pieces, j+8*i, WHITE);
-				if (c == '0') {
+				if (c == '.') {
 					printf("%c ", c);
 				} else {
 					printf(COLOR_GREEN "%c " RESET, c);
 				}
 			}
 		}
+		printf("%d", i + 1);
 		printf ("\n");
 	}
+
+	print_files();
 }
 
 char get_symbol(Pieces *pieces, int square, int active_player) {
@@ -138,7 +153,7 @@ char get_symbol(Pieces *pieces, int square, int active_player) {
 	} else if (pieces->king & mask) {
 		token = 'k';
 	} else {
-		token = '0';
+		token = '.';
 	}
 	if (active_player == BLACK) {
 		return token;

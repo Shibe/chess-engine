@@ -1,16 +1,31 @@
 #include "bitboard.h"
-#include "chessboard.h"
+
 #include "fixed_pieces.h"
 #include "sliding_pieces.h"
 #include "input.h"
 #include "game.h"
+#include "gamestate.h"
 #include <stdio.h>
 
 
 void game_loop(Chessboard *chessboard) {
 	while (1) {
-		print_chessboard(chessboard);
 		int active_player = chessboard->active_color;
+		print_chessboard(chessboard);
+
+		int game_state = get_gamestate(chessboard, active_player);
+		if (game_state == GS_STALEMATE) {
+			puts("Stalemate");
+			return;
+		} else if (game_state == GS_MATE) {
+			if (active_player == WHITE){
+				puts("Black mated white");
+			} else {
+				puts("White mated black");
+			}
+			return;
+		}
+
 		Bitboard start, end;
 		Pieces *own_pieces, *opposing_pieces;
 
@@ -40,9 +55,9 @@ void game_loop(Chessboard *chessboard) {
 
 int get_player_move(Bitboard *start, Bitboard *end) {
 	int start_file, start_rank, end_file, end_rank;
-	int correct_move = read_move(&start_file, &start_rank, &end_file, &end_rank);
-	if (!correct_move) {
-		return 1;
+	int move_error = read_move(&start_file, &start_rank, &end_file, &end_rank);
+	if (move_error) {
+		return -1;
 	}
 	*start = input_to_square(start_rank, start_file);
 	*end = input_to_square(end_rank ,end_file);
@@ -51,13 +66,12 @@ int get_player_move(Bitboard *start, Bitboard *end) {
 
 int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Pieces *opposing_side, Bitboard *en_passant_target) {
 	Bitboard is_valid_move = 0x0ULL;
-
 	if (!(own_side->all & start)) {
 		return 0;
 	}
 	
 	if (start & own_side->pawns) {
-		is_valid_move = end & compute_pawn(active_player, own_side->pawns & start, own_side->all, opposing_side->all, *en_passant_target, mask_rank, clear_file);
+		is_valid_move = end & compute_valid_pawn_moves(active_player, own_side->pawns & start, own_side->all, opposing_side->all, *en_passant_target, clear_file, mask_rank);
 	} else if (start & own_side->rooks) {
 		is_valid_move = end & compute_rook(own_side->rooks & start, own_side->all, opposing_side->all, clear_file);
 	} else if (start & own_side->knights) {
@@ -73,7 +87,7 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	if (!is_valid_move) {
 		return 0;
 	}
-	
+
 	if (start & own_side->pawns) {
 		if (active_player == WHITE && end == (start << 16)) {
 			*en_passant_target = start << 8;
@@ -95,27 +109,19 @@ int turn(Bitboard start, Bitboard end, int active_player, Pieces *own_side, Piec
 	} else {
 		*en_passant_target = 0x0ULL;
 	}
-	move_piece(own_side, start, end);
-	move_piece(opposing_side, end, 0x0ULL);
-	return 1;
-}
 
-int move_piece(Pieces *pieces, Bitboard start, Bitboard end) {
-	if (start & pieces->pawns) {
-		pieces->pawns = (pieces->pawns & ~start) | end;
-	} else if (start & pieces->rooks) {
-		pieces->rooks = (pieces->rooks & ~start) | end;
-	} else if (start & pieces->knights) {
-		pieces->knights = (pieces->knights & ~start) | end;
-	} else if (start & pieces->bishops) {
-		pieces->bishops = (pieces->bishops & ~start) | end;
-	} else if (start & pieces->queens) {
-		pieces->queens = (pieces->queens & ~start) | end;
-	} else if (start & pieces->king) {
-		pieces->king = (pieces->king & ~start) | end;
-	} else {
+	Pieces own_side_copy = *own_side;
+	Pieces opponent_side_copy = *opposing_side;
+	move_piece(&own_side_copy, start, end);
+	move_piece(&opponent_side_copy, end, 0x0ULL);
+	update_pieces(&own_side_copy);
+	update_pieces(&opponent_side_copy);
+	Bitboard in_check = is_checked(own_side_copy.king, compute_attacking_squares(!active_player, &opponent_side_copy, &own_side_copy, *en_passant_target));
+	if (in_check) { // Moving causes king to be checked. Not allowed.
 		return 0;
 	}
+	move_piece(own_side, start, end);
+	move_piece(opposing_side, end, 0x0ULL);
 	return 1;
 }
 
@@ -124,18 +130,4 @@ Bitboard input_to_square(int rank, int file) {
 	int shift_amount = rank * 8 + file;
 	location = location << shift_amount;
 	return location;
-}
-
-Bitboard compute_attacked_squares(int opposing_player, Pieces *own_side, Pieces *opposing_side, Bitboard en_passant_target) {
-	Bitboard pawns = compute_pawn(opposing_player, opposing_side->pawns, opposing_side->all, en_passant_target, own_side->all, mask_rank, clear_file); //TODO: Not every valid move is an attacked square, should be split up.
-	Bitboard rooks = compute_rook(opposing_side->rooks, opposing_side->all, own_side->all, clear_file);
-	Bitboard knights = compute_knight(opposing_side->knights, opposing_side->all, clear_file);
-	Bitboard bishops = compute_bishop(opposing_side->bishops, opposing_side->all, own_side->all, clear_file);
-	Bitboard queens = compute_queen(opposing_side->queens, opposing_side->all, own_side->all, clear_file);
-	Bitboard king = compute_king(opposing_side->king, opposing_side->all, clear_file);
-	return pawns | rooks | knights | bishops | queens | king;
-}
-
-int is_checked(Bitboard king, Bitboard attacked_squares) {
-	return king & attacked_squares;
 }

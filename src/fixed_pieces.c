@@ -1,6 +1,9 @@
 #include "bitboard.h"
-#include "stdio.h"
 #include "chessboard.h"
+
+#include <stdio.h>
+#include <ctype.h>
+
 /*
     Basic idea: 
 
@@ -192,7 +195,24 @@ Bitboard compute_knight(Bitboard knight_loc, Bitboard own_side, Bitboard clear_f
     To avoid the wrap around problem for diagonal movements, clearing File H and File A are done accordingly.
 */
 
-Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard en_passant_target, Bitboard mask_rank[RANK_LEN], Bitboard clear_file[FILE_LEN]) {
+Bitboard compute_pawn_attacks(int active_player, Bitboard pawn_loc, Bitboard opposing_side, Bitboard en_passant_target, Bitboard clear_file[FILE_LEN]) {
+    Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL;
+    
+    if (active_player == BLACK) { 
+        pos_1 = pawn_loc >> 7 & clear_file[FILE_A];
+        pos_2 = pawn_loc >> 9 & clear_file[FILE_H];
+
+    } else {
+        pos_1 = pawn_loc << 7 & clear_file[FILE_H];
+        pos_2 = pawn_loc << 9 & clear_file[FILE_A];
+    }
+
+    Bitboard valid_pawn_attacks = ((pos_1 | pos_1) & opposing_side) | (pos_1 | pos_1) & en_passant_target;
+
+    return valid_pawn_attacks;
+}
+
+Bitboard compute_pawn_moves(int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard mask_rank[RANK_LEN]) {
     Bitboard pos_1 = 0x0ULL, pos_2 = 0x0ULL, pos_3 = 0x0ULL, pos_4 = 0x0ULL, pawn_on_start_position = 0x0ULL;
     
     if (active_player == BLACK) { 
@@ -202,8 +222,6 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
         if (pawn_on_start_position && pos_1) {
             pos_2 = pawn_loc >> 16;
         }
-        pos_3 = pawn_loc >> 7 & clear_file[FILE_A];
-        pos_4 = pawn_loc >> 9 & clear_file[FILE_H];
 
     } else {
         pos_1 = pawn_loc << 8;
@@ -212,14 +230,51 @@ Bitboard compute_pawn(int active_player, Bitboard pawn_loc, Bitboard own_side, B
         if (pawn_on_start_position && pos_1) {
             pos_2 = pawn_loc << 16;
         }
-
-        pos_3 = pawn_loc << 7 & clear_file[FILE_H];
-        pos_4 = pawn_loc << 9 & clear_file[FILE_A];
     }
 
-    Bitboard move = (pos_1 | pos_2) & ~opposing_side & ~own_side;
-    Bitboard attack =  ((pos_3 | pos_4) & opposing_side) | (pos_3 | pos_4) & en_passant_target;
-    Bitboard valid_pawn_moves = move | attack;
+    Bitboard valid_pawn_moves = (pos_1 | pos_2) & ~opposing_side & ~own_side;
 
     return valid_pawn_moves;
+}
+
+Bitboard compute_valid_pawn_moves (int active_player, Bitboard pawn_loc, Bitboard own_side, Bitboard opposing_side, Bitboard en_passant_target, 
+    Bitboard clear_file[FILE_LEN], Bitboard mask_rank[RANK_LEN]) {
+
+    Bitboard valid_pawn_moves = compute_pawn_attacks(active_player, pawn_loc, opposing_side, en_passant_target, clear_file) 
+        | compute_pawn_moves(active_player, pawn_loc, own_side, opposing_side, mask_rank);
+
+    return valid_pawn_moves;
+}
+
+//TODO: whenever promoting occurs, asks two times for promotion. This needs to be fixed.
+int promote_pawn(Pieces *own_side, Bitboard start, Bitboard end) {
+    int promoting = 1;
+    while (promoting) {
+        char piece[3];
+        puts("Which piece do you want? Input must be 'q', 'r', 'n' or 'b'");
+        scanf("%s", piece);
+        switch(tolower(piece[0])) {
+            case 'q':                      
+                own_side->queens |= end;
+                promoting = 0;
+                break;         
+            case 'r':
+                own_side->rooks |= end;      
+                promoting = 0;
+                break;
+            case 'n':       
+                own_side->knights |= end;
+                promoting = 0;    
+                break; 
+            case 'b':
+                own_side->bishops |= end;
+                promoting = 0;
+                break;
+            default:
+                puts("Input not valid. Input must be 'q', 'r', 'n' or 'b'."); 
+        }
+    }
+    
+    own_side->pawns &= ~start;
+    return 0;
 }
