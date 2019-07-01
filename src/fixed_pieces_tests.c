@@ -37,7 +37,7 @@ TEST test_compute_pawn_white(void) {
 		FAIL();
 	}
 	Bitboard result = compute_valid_pawn_moves(WHITE, chessboard->white_pieces->pawns, chessboard->white_pieces->all, chessboard->black_pieces->all, chessboard->en_passant_target, mask_rank, clear_file);
-	Bitboard expected = 0x1800EEEF0000ULL;
+	Bitboard expected = 0x1000EEED0000ULL;
 	ASSERT_EQ_FMT(expected, result, "%llx");
 	PASS();
 }
@@ -50,7 +50,7 @@ TEST test_compute_pawn_black(void) {
 		FAIL();
 	}
 	Bitboard result = compute_valid_pawn_moves(BLACK, chessboard->black_pieces->pawns, chessboard->black_pieces->all, chessboard->white_pieces->all, chessboard->en_passant_target, mask_rank, clear_file);
-	Bitboard expected = 0xF77700180000ULL;
+	Bitboard expected = 0xB77700080000ULL;
 	ASSERT_EQ_FMT(expected, result, "%llx");
 	PASS();
 }
