@@ -2,7 +2,7 @@
 Please refer to our [wiki](https://github.com/Shibe/chess-engine/wiki) for useful papers, links, background information and techniques used in this project.
 
 ## build instructions
-On Unix-like systems it should be possible to compile the source code with the Makefile.
+On Unix-like systems it should be possible to compile the source code with the [Makefile](./Makefile).
 Before compiling the source, make sure to have a ```bin``` and ```obj``` folder in the root of the project:
 ```
 mkdir bin obj
