@@ -7,6 +7,7 @@
 SUITE_EXTERN(fixed_pieces_suite);
 SUITE_EXTERN(sliding_pieces_suite);
 SUITE_EXTERN(gamestate_suite);
+SUITE_EXTERN(fen_serializer_suite);
 
 GREATEST_MAIN_DEFS();
 
@@ -15,5 +16,6 @@ int main(int argc, char *argv[]) {
 	RUN_SUITE(fixed_pieces_suite);
 	RUN_SUITE(sliding_pieces_suite);
 	RUN_SUITE(gamestate_suite);
+	RUN_SUITE(fen_serializer_suite);
 	GREATEST_MAIN_END();
 }
