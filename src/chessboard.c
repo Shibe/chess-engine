@@ -62,7 +62,7 @@ void initialise_chessboard(Chessboard *chessboard) {
 	chessboard->castle_black = LONG | SHORT;
 	chessboard->en_passant_target = 0x0ULL;
 	chessboard->halfmove_clock = 0;
-	chessboard->fullmove_number = 0;
+	chessboard->fullmove_number = 1;
 
 	update_chessboard(chessboard);
 }

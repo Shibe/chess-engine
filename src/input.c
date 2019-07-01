@@ -1,4 +1,5 @@
 #include "input.h"
+#include "bitboard.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -15,28 +16,28 @@ int read_move(int *start_file, int *start_rank, int *end_file, int *end_rank) {
 int parse_file(char c, int *file) {
 	switch(c) {
 		case 'a':
-			*file = 0;
+			*file = FILE_A;
 			return 1;
 		case 'b':
-			*file = 1;
+			*file = FILE_B;
 			return 1;
 		case 'c':
-			*file = 2;
+			*file = FILE_C;
 			return 1;
 		case 'd':
-			*file = 3;
+			*file = FILE_D;
 			return 1;
 		case 'e':
-			*file = 4;
+			*file = FILE_E;
 			return 1;
 		case 'f':
-			*file = 5;
+			*file = FILE_F;
 			return 1;
 		case 'g':
-			*file = 6;
+			*file = FILE_G;
 			return 1;
 		case 'h':
-			*file = 7;
+			*file = FILE_H;
 			return 1;
 		default:
 			return 0;

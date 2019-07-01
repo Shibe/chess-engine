@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <string.h>
 #include "bitboard.h"
 #include "chessboard.h"
 #include "fen_parser.h"
 #include "input.h"
 #include "game.h"
-
 
 int parse(Chessboard *chessboard, char *fen) {
     char **stream = &fen;
@@ -56,6 +56,8 @@ int parse_whitespace(char **stream) {
     }
     return 0;
 }
+
+// 1 -> left shift (7 * 8 + 0)
 
 int parse_pieces(Chessboard *chessboard, char **stream) {
     int current_rank = RANK_8; 

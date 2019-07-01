@@ -9,6 +9,7 @@
 #include "minunit.h"
 #include "game.h"
 #include "fen_parser.h"
+#include "fen_serializer.h"
 
 int tests_run = 0;
 
@@ -141,6 +142,13 @@ static char* test_en_passant_take() {
     return 0;
 }
 
+static char* test_create_fen() {
+    Chessboard *chessboard = create_chessboard();
+    char *fen = "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3";
+    parse(chessboard, fen);
+    serialize_fen(chessboard, &fen);
+}
+
 static char *all_tests() {
     mu_run_test(test_king_attacks);
     mu_run_test(test_knight_attacks);
@@ -150,6 +158,7 @@ static char *all_tests() {
     mu_run_test(test_black_pawn_attacks_from_start);
     mu_run_test(test_white_pawn_attacks);
     mu_run_test(test_en_passant_take);
+    mu_run_test(test_create_fen);
     return 0;
 }
 
@@ -176,6 +185,7 @@ int main(int argc, char *argv[]) {
     } else {
         initialise_chessboard(chessboard);
     }
-    game_loop(chessboard);  
+    game_loop(chessboard);
+    
     return 0;
 }
